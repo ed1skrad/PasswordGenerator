@@ -1,7 +1,7 @@
 package com.password.generator.bsuir.controller;
 
 import com.password.generator.bsuir.dto.PasswordGenerationDto;
-import com.password.generator.bsuir.model.DifficultyEnum.Difficulty;
+import com.password.generator.bsuir.model.difficultyenum.Difficulty;
 import com.password.generator.bsuir.service.PasswordGenerationService;
 import org.junit.Before;
 import org.junit.Test;

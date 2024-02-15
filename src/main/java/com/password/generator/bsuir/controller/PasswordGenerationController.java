@@ -40,7 +40,7 @@ public class PasswordGenerationController {
     }
 
     @GetMapping("/getAllGeneratedPasswords")
-    public ResponseEntity<?> getAllGeneratedPasswords() {
+    public ResponseEntity<Object> getAllGeneratedPasswords() {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswords();
         if (generatedPasswords.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Password not found");
