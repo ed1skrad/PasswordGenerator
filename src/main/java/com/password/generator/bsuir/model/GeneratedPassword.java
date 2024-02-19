@@ -1,5 +1,6 @@
 package com.password.generator.bsuir.model;
 
+import com.password.generator.bsuir.model.difficultyenum.Difficulty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,14 +12,13 @@ public class GeneratedPassword {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String password;
-    private String difficulty;
+    private Difficulty difficulty;
 
     public GeneratedPassword() {
     }
 
-    public GeneratedPassword(String password, String difficulty) {
+    public GeneratedPassword(String password, Difficulty difficulty) {
         this.password = password;
         this.difficulty = difficulty;
     }
@@ -39,11 +39,11 @@ public class GeneratedPassword {
         this.password = password;
     }
 
-    public String getDifficulty() {
+    public Difficulty getDifficulty() {
         return difficulty;
     }
 
-    public void setDifficulty(String difficulty) {
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
 }

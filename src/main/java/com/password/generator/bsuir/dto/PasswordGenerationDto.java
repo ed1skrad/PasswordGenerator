@@ -3,7 +3,9 @@ package com.password.generator.bsuir.dto;
 import com.password.generator.bsuir.model.difficultyenum.Difficulty;
 
 public class PasswordGenerationDto {
+
     private Difficulty difficulty;
+
     private int length;
 
     public Difficulty getDifficulty() {

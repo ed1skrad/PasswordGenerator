@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -20,7 +21,6 @@ public class PasswordGenerationService {
     private static final String SYMBOLS = "!@#$%^&*()-_=+";
 
     private static final Random random = new SecureRandom();
-
     private final PasswordRepository passwordRepository;
 
     @Autowired
@@ -29,15 +29,6 @@ public class PasswordGenerationService {
     }
 
     public String generatePassword(PasswordGenerationDto dto) {
-        if (dto.getDifficulty() == null || dto.getLength() <= 0) {
-            return null;
-        }
-
-        Difficulty difficulty = dto.getDifficulty();
-        if (difficulty != Difficulty.EASY && difficulty != Difficulty.NORMAL && difficulty != Difficulty.HARD) {
-            return null;
-        }
-
         return generatePasswordString(dto);
     }
 
@@ -51,7 +42,7 @@ public class PasswordGenerationService {
         }
 
         String generatedPassword = password.toString();
-        String difficulty = dto.getDifficulty().toString();
+        Difficulty difficulty = dto.getDifficulty();
 
         passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty));
 
@@ -66,9 +57,12 @@ public class PasswordGenerationService {
         };
     }
 
-    public String getLastGeneratedPassword() {
-        GeneratedPassword lastGeneratedPassword = passwordRepository.findTopByOrderByIdDesc();
-        return lastGeneratedPassword != null ? lastGeneratedPassword.getPassword() : "";
+    public Optional<GeneratedPassword> getPasswordById(Long id) {
+        return passwordRepository.findById(id);
+    }
+
+    public List<GeneratedPassword> getPasswordsByDifficulty(Difficulty difficulty) {
+        return passwordRepository.findByDifficulty(difficulty);
     }
 
     public List<GeneratedPassword> getAllGeneratedPasswords() {
