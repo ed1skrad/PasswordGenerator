@@ -1,0 +1,138 @@
+package com.password.generator.bsuir.security.domain.model;
+
+import com.password.generator.bsuir.model.GeneratedPassword;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
+        })
+public class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
+    @Size(max = 20)
+    private String username;
+
+    @NotBlank
+    @Size(max = 50)
+    @Email
+    private String email;
+
+    @NotBlank
+    @Size(max = 120)
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<GeneratedPassword> generatedPasswords = new HashSet<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .toList();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        // У нас нет логики для проверки срока действия аккаунта, всегда возвращаем true
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        // У нас нет логики для проверки заблокированности аккаунта, всегда возвращаем true
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        // У нас нет логики для проверки срока действия учетных данных, всегда возвращаем true
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        // У нас нет логики для проверки активности аккаунта, всегда возвращаем true
+        return true;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Role> getRole() {
+        return roles;
+    }
+
+    public void setRole(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<GeneratedPassword> getGeneratedPasswords() {
+        return generatedPasswords;
+    }
+
+    public void setGeneratedPasswords(Set<GeneratedPassword> generatedPasswords) {
+        this.generatedPasswords = generatedPasswords;
+    }
+}
