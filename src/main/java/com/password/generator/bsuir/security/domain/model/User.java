@@ -56,25 +56,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        // У нас нет логики для проверки срока действия аккаунта, всегда возвращаем true
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // У нас нет логики для проверки заблокированности аккаунта, всегда возвращаем true
         return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // У нас нет логики для проверки срока действия учетных данных, всегда возвращаем true
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        // У нас нет логики для проверки активности аккаунта, всегда возвращаем true
         return true;
     }
 

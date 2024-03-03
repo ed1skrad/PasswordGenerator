@@ -35,17 +35,18 @@ public class PasswordGenerationService {
         this.userService = userService;
     }
 
-    public String generatePassword(PasswordGenerationDto dto) {
+
+    public String generatePassword (PasswordGenerationDto dto){
         return generatePasswordString(dto);
     }
 
-    private User getCurrentUser() {
+    private User getCurrentUser () {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return userService.getByUsername(username);
     }
 
-    public String generatePasswordString(PasswordGenerationDto dto) {
+    public String generatePasswordString (PasswordGenerationDto dto){
         StringBuilder password = new StringBuilder();
         String charPool = getCharacterPool(dto.getDifficulty());
 
@@ -64,8 +65,7 @@ public class PasswordGenerationService {
         return generatedPassword;
     }
 
-
-    private String getCharacterPool(Difficulty difficulty) {
+    private String getCharacterPool (Difficulty difficulty){
         return switch (difficulty) {
             case EASY -> LOWERCASE_CHARS;
             case NORMAL -> LOWERCASE_CHARS + UPPERCASE_CHARS + DIGITS;
@@ -73,15 +73,16 @@ public class PasswordGenerationService {
         };
     }
 
-    public Optional<GeneratedPassword> getPasswordById(Long id) {
+    public Optional<GeneratedPassword> getPasswordById (Long id){
         return passwordRepository.findById(id);
     }
 
-    public List<GeneratedPassword> getPasswordsByDifficulty(Difficulty difficulty) {
+    public List<GeneratedPassword> getPasswordsByDifficulty (Difficulty difficulty){
         return passwordRepository.findByDifficulty(difficulty);
     }
 
-    public List<GeneratedPassword> getAllGeneratedPasswords() {
+    public List<GeneratedPassword> getAllGeneratedPasswords () {
         return passwordRepository.findAll();
     }
 }
+
