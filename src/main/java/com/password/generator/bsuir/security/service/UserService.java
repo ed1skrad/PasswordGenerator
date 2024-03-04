@@ -7,13 +7,10 @@ import com.password.generator.bsuir.security.repository.RoleRepository;
 import com.password.generator.bsuir.security.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class UserService {
@@ -55,21 +52,6 @@ public class UserService {
         return this::getByUsername;
     }
 
-    public User getCurrentUser() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
-    }
-
-    @Deprecated
-    public void getAdmin() {
-        var user = getCurrentUser();
-
-        Set<Role> roles = new HashSet<>();
-        roles.add(new Role(RoleEnum.ROLE_ADMIN));
-        user.setRole(roles);
-
-        save(user);
-    }
 
     @Transactional
     public Role findRoleByName(RoleEnum roleName) {
