@@ -2,8 +2,6 @@ package com.password.generator.bsuir.security.controller;
 
 import com.password.generator.bsuir.security.domain.model.User;
 import com.password.generator.bsuir.security.service.AuthenticationService;
-import com.password.generator.bsuir.security.service.UserService;
-import com.password.generator.bsuir.service.PasswordGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
