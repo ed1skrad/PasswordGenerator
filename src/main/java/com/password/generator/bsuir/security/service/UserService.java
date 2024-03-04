@@ -11,15 +11,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+
 
     @Autowired
     public UserService(UserRepository repository) {
-        this.repository = repository;
+        this.userRepository = repository;
     }
 
     public User getByUsername(String username) {
-        return repository.findByUsername(username)
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
     }

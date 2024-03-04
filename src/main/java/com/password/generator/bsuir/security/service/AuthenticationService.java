@@ -78,4 +78,23 @@ public class AuthenticationService {
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }
+
+    public void deleteUserById(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public void updateUser(Long userId, User updatedUser) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+
+        if (!updatedUser.getPassword().equals(user.getPassword())) {
+            String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
+        userRepository.save(user);
+    }
 }

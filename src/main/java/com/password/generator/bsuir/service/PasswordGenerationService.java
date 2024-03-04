@@ -80,9 +80,12 @@ public class PasswordGenerationService {
     public List<GeneratedPassword> getPasswordsByDifficulty (Difficulty difficulty){
         return passwordRepository.findByDifficulty(difficulty);
     }
-
     public List<GeneratedPassword> getAllGeneratedPasswords () {
         return passwordRepository.findAll();
+    }
+
+    public void deleteGeneratedPasswordById(Long generatedPasswordId) {
+        passwordRepository.deleteById(generatedPasswordId);
     }
 }
 

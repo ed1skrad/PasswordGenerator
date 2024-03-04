@@ -7,6 +7,7 @@ import com.password.generator.bsuir.service.PasswordGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,5 +60,12 @@ public class PasswordGenerationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Password not found");
         }
         return ResponseEntity.ok(generatedPasswords);
+    }
+
+    @DeleteMapping("/delete/{passwordId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteGeneratedPassword(@PathVariable Long passwordId) {
+        passwordGenerationService.deleteGeneratedPasswordById(passwordId);
+        return ResponseEntity.ok("Generated password deleted successfully");
     }
 }
