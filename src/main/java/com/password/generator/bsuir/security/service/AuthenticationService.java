@@ -5,6 +5,9 @@ import com.password.generator.bsuir.security.domain.dto.*;
 import com.password.generator.bsuir.security.domain.model.Role;
 import com.password.generator.bsuir.security.domain.model.RoleEnum;
 import com.password.generator.bsuir.security.domain.model.User;
+import com.password.generator.bsuir.security.exception.EmailInUseException;
+import com.password.generator.bsuir.security.exception.RoleNotFoundException;
+import com.password.generator.bsuir.security.exception.UsernameTakenException;
 import com.password.generator.bsuir.security.repository.RoleRepository;
 import com.password.generator.bsuir.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,6 @@ public class AuthenticationService {
     private final RoleRepository roleRepository;
 
 
-
     @Autowired
     public AuthenticationService(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
                                  UserRepository userRepository, RoleRepository roleRepository) {
@@ -41,11 +43,11 @@ public class AuthenticationService {
     @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Error: username is taken!");
+            throw new UsernameTakenException("Error: username is taken!");
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Error: email already in use!");
+            throw new EmailInUseException("Error: email already in use!");
         }
 
         User user = new User();
@@ -54,7 +56,7 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Role notConfirmedRole = roleRepository.findByName(RoleEnum.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error. Role not found."));
+                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
         user.setRole(Collections.singleton(notConfirmedRole));
         userRepository.save(user);
 

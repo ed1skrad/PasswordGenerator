@@ -1,11 +1,8 @@
 package com.password.generator.bsuir.security.service;
 
-import com.password.generator.bsuir.security.domain.model.Role;
-import com.password.generator.bsuir.security.domain.model.RoleEnum;
 import com.password.generator.bsuir.security.domain.model.User;
 import com.password.generator.bsuir.security.repository.RoleRepository;
 import com.password.generator.bsuir.security.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,34 +14,14 @@ public class UserService {
 
     private final UserRepository repository;
 
-    private final RoleRepository roleRepository;
-
     @Autowired
-    public UserService(UserRepository repository, RoleRepository roleRepository) {
+    public UserService(UserRepository repository) {
         this.repository = repository;
-        this.roleRepository = roleRepository;
-    }
-
-    public User save(User user) {
-        return repository.save(user);
-    }
-
-
-    public User create(User user) {
-        if (repository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Пользователь с таким именем уже существует");
-        }
-
-        if (repository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
-        }
-
-        return save(user);
     }
 
     public User getByUsername(String username) {
         return repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
     }
 
@@ -52,15 +29,4 @@ public class UserService {
         return this::getByUsername;
     }
 
-
-    @Transactional
-    public Role findRoleByName(RoleEnum roleName) {
-        return roleRepository.findByName(roleName)
-                .orElse(null);
-    }
-
-    @Transactional
-    public void saveRole(Role role) {
-        roleRepository.save(role);
-    }
 }
