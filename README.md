@@ -19,5 +19,8 @@
 
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ed1skrad_BsuirJava)](https://sonarcloud.io/summary/new_code?id=ed1skrad_BsuirJava)
 
-
+## Schema
 ![db](https://github.com/ed1skrad/BsuirJava/blob/main/pic/img.png)
+
+## Swagger
+![swagger](https://github.com/ed1skrad/BsuirJava/blob/main/pic/img_1.png)
