@@ -65,6 +65,8 @@ public class PasswordGenerationService {
         return generatedPassword;
     }
 
+
+
     private String getCharacterPool (Difficulty difficulty){
         return switch (difficulty) {
             case EASY -> LOWERCASE_CHARS;

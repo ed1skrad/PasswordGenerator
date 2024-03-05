@@ -17,7 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
@@ -55,9 +58,16 @@ public class AuthenticationService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Role notConfirmedRole = roleRepository.findByName(RoleEnum.ROLE_USER)
+        Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
                 .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
-        user.setRole(Collections.singleton(notConfirmedRole));
+        Role adminRole = roleRepository.findByName(RoleEnum.ROLE_ADMIN)
+                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
+
+        List<Role> roles = new ArrayList<>();
+        roles.add(userRole);
+        roles.add(adminRole);
+
+        user.setRole(roles);
         userRepository.save(user);
 
         String jwt = jwtService.generateToken(user);
@@ -79,9 +89,16 @@ public class AuthenticationService {
         return new JwtAuthenticationResponse(jwt);
     }
 
+    @Transactional
     public void deleteUserById(Long userId) {
-        userRepository.deleteById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+
+        user.getRole().clear();
+
+        userRepository.delete(user);
     }
+
 
     public void updateUser(Long userId, User updatedUser) {
         User user = userRepository.findById(userId)

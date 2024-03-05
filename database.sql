@@ -1,4 +1,12 @@
 
+
+CREATE TABLE users (
+                       id SERIAL PRIMARY KEY,
+                       username VARCHAR(20) NOT NULL,
+                       email VARCHAR(50) UNIQUE NOT NULL,
+                       password VARCHAR(120) NOT NULL
+);
+
 CREATE TYPE difficulty_enum AS ENUM ('EASY', 'NORMAL', 'HARD');
 
 CREATE TABLE generated_password (
@@ -20,12 +28,6 @@ CREATE TABLE roles (
                        name VARCHAR(20) UNIQUE NOT NULL
 );
 
-CREATE TABLE users (
-                       id SERIAL PRIMARY KEY,
-                       username VARCHAR(20) NOT NULL,
-                       email VARCHAR(50) UNIQUE NOT NULL,
-                       password VARCHAR(120) NOT NULL
-);
 
 CREATE TABLE user_roles (
                             user_id INT,

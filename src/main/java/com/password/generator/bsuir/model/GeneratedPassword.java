@@ -14,13 +14,12 @@ public class GeneratedPassword {
 
     private String password;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Difficulty difficulty;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 
     public GeneratedPassword() {
     }

@@ -9,9 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users",
@@ -41,9 +39,9 @@ public class User implements UserDetails {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private transient Set<GeneratedPassword> generatedPasswords = new HashSet<>();
 
     @Override
@@ -107,11 +105,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Set<Role> getRole() {
+    public List<Role> getRole() {
         return roles;
     }
 
-    public void setRole(Set<Role> roles) {
+    public void setRole(List<Role> roles) {
         this.roles = roles;
     }
 
