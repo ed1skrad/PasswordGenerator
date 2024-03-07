@@ -24,6 +24,7 @@ public class GeneratedPassword {
     public GeneratedPassword() {
     }
 
+
     public Long getId () {
         return id;
     }
@@ -60,6 +61,11 @@ public class GeneratedPassword {
             this.password = password;
             this.difficulty = difficulty;
             this.user = user;
+    }
+
+    public GeneratedPassword(Long id, String password) {
+        this.id = id;
+        this.password = password;
     }
 }
 
