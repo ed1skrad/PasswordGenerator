@@ -68,4 +68,14 @@ public class PasswordGenerationController {
         passwordGenerationService.deleteGeneratedPasswordById(passwordId);
         return ResponseEntity.ok("Generated password deleted successfully");
     }
+
+    @GetMapping("/user/{username}/passwords")
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<GeneratedPassword>> getAllGeneratedPasswordsForUser(@PathVariable String username) {
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswordsForUser(username);
+        if (generatedPasswords.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(generatedPasswords);
+    }
 }

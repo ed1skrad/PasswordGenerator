@@ -125,4 +125,9 @@ public class PasswordGenerationService {
         passwordRepository.deleteById(generatedPasswordId);
         logger.info("Deleted password for id '{}' from database.", generatedPasswordId);
     }
+
+
+    public List<GeneratedPassword> getAllGeneratedPasswordsForUser(String username) {
+        return passwordRepository.findAllByUserUsername(username);
+    }
 }
