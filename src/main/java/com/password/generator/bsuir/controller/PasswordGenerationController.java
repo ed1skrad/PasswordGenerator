@@ -78,4 +78,10 @@ public class PasswordGenerationController {
         }
         return ResponseEntity.ok(generatedPasswords);
     }
+
+    @PostMapping("/generatePasswords/{count}")
+    public ResponseEntity<List<String>> generatePasswords(@RequestBody List<PasswordGenerationDto> dtos, @PathVariable int count) {
+        List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
+        return ResponseEntity.ok(generatedPasswords);
+    }
 }

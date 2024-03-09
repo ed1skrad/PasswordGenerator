@@ -15,9 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class PasswordGenerationService {
@@ -76,7 +79,7 @@ public class PasswordGenerationService {
             Difficulty difficulty = dto.getDifficulty();
 
             passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty, currentUser));
-            passwordCache.put(userId, generatedPassword);
+            //passwordCache.put(userId, generatedPassword);
 
             return generatedPassword;
         }
@@ -130,4 +133,18 @@ public class PasswordGenerationService {
     public List<GeneratedPassword> getAllGeneratedPasswordsForUser(String username) {
         return passwordRepository.findAllByUserUsername(username);
     }
+
+    public List<String> generatePasswords(List<PasswordGenerationDto> dtos, int count) {
+        logger.info("Generating passwords...");
+
+        List<String> generatedPasswords = dtos.stream()
+                .flatMap(dto -> Stream.generate(() -> generatePasswordString(dto))
+                        .limit(count))
+                .collect(Collectors.toList());
+
+        logger.info("Passwords generated successfully.");
+
+        return generatedPasswords;
+    }
+
 }
