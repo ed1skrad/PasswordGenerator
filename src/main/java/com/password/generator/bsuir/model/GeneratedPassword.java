@@ -14,7 +14,7 @@ public class GeneratedPassword {
 
     private String password;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
     @ManyToOne

@@ -41,3 +41,4 @@ INSERT INTO roles (name) VALUES ('ROLE_USER');
 INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
 
 
+ALTER TABLE generated_password ALTER COLUMN difficulty TYPE varchar(255);
