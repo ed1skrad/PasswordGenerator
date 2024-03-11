@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../../css/RegistrationForm/registrationForm.css';
+
 
 const RegistrationForm = () => {
     const [username, setUsername] = useState('');
@@ -15,7 +17,6 @@ const RegistrationForm = () => {
                 password,
             });
             localStorage.setItem('token', response.data.token);
-            // Редирект на страницу авторизации после успешной регистрации
             window.location.href = '/login';
         } catch (error) {
             console.error('Failed to register: ', error);
@@ -24,7 +25,7 @@ const RegistrationForm = () => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
+            <form className="registration-form" onSubmit={handleSubmit}>
                 <label>
                     Username:
                     <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />

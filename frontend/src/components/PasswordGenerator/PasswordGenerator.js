@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../../css/PasswordGenerator/passwordGenerator.css';
+
 
 const PasswordGenerator = () => {
     const [difficulty, setDifficulty] = useState('EASY'); // Default difficulty is EASY
@@ -30,7 +32,7 @@ const PasswordGenerator = () => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
+            <form className="password-generator" onSubmit={handleSubmit}>
                 <label>
                     Difficulty:
                     <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
@@ -39,12 +41,12 @@ const PasswordGenerator = () => {
                         <option value="HARD">HARD</option>
                     </select>
                 </label>
-                <br />
+                <br/>
                 <label>
                     Length:
-                    <input type="number" value={length} onChange={(e) => setLength(e.target.value)} />
+                    <input type="number" value={length} onChange={(e) => setLength(e.target.value)}/>
                 </label>
-                <br />
+                <br/>
                 <button type="submit">Generate Password</button>
             </form>
             {password && <p>Generated Password: {password}</p>}

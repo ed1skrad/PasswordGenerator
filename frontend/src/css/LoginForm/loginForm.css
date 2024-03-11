@@ -1,0 +1,12 @@
+/* Specific styles for LoginForm */
+.login-form {
+    margin-top: 2rem;
+}
+
+.login-form label {
+    font-weight: bold;
+}
+
+.login-form button {
+    margin-top: 1rem;
+}

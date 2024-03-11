@@ -1,0 +1,12 @@
+/* Specific styles for RegistrationForm */
+.registration-form {
+    margin-top: 2rem;
+}
+
+.registration-form label {
+    font-weight: bold;
+}
+
+.registration-form button {
+    margin-top: 1rem;
+}
