@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../../css/PasswordGenerator/passwordGenerator.css';
 
@@ -6,9 +6,15 @@ const PasswordGenerator = () => {
     const [difficulty, setDifficulty] = useState('EASY');
     const [length, setLength] = useState(8);
     const [password, setPassword] = useState('');
+    const buttonRef = useRef(null);
+    const [animationPlaying, setAnimationPlaying] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setAnimationPlaying(false);
+        buttonRef.current.style.animationPlayState = 'paused';
+
         try {
             const token = localStorage.getItem('token');
             const config = {
@@ -35,10 +41,22 @@ const PasswordGenerator = () => {
         }
     };
 
+    const copyPasswordToClipboard = () => {
+        navigator.clipboard.writeText(password);
+    };
+
     useEffect(() => {
-        const button = document.querySelector('.password-generator button');
+        if (!animationPlaying) {
+            setTimeout(() => {
+                buttonRef.current.style.animationPlayState = 'running';
+                setAnimationPlaying(true);
+            }, 30000);
+        }
+    }, [animationPlaying]);
+
+    useEffect(() => {
         setTimeout(() => {
-            button.style.animationPlayState = 'running';
+            setAnimationPlaying(true);
         }, 30000);
     }, []);
 
@@ -59,11 +77,15 @@ const PasswordGenerator = () => {
                     <input type="number" value={length} onChange={handleLengthChange} />
                 </label>
                 <br />
-                <button type="submit">Generate Password</button>
+                <button type="submit" ref={buttonRef}>Generate Password</button>
             </form>
-            {password && <div className="generated-password">Generated Password: {password}</div>}
+            {password && (
+                <div className="generated-password" onClick={copyPasswordToClipboard}>
+                    {password}
+                </div>
+            )}
         </div>
-    );
+);
 };
 
 export default PasswordGenerator;
