@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../../css/PasswordGenerator/passwordGenerator.css';
+import StarBackground from "../Background/StarBackground";
 
 const PasswordGenerator = () => {
     const [difficulty, setDifficulty] = useState('EASY');
@@ -62,6 +63,7 @@ const PasswordGenerator = () => {
 
     return (
         <div className="password-generator">
+            <StarBackground />
             <form onSubmit={handleSubmit}>
                 <label>
                     Difficulty:
@@ -71,12 +73,12 @@ const PasswordGenerator = () => {
                         <option value="HARD">HARD</option>
                     </select>
                 </label>
-                <br />
+                <br/>
                 <label>
                     Length:
-                    <input type="number" value={length} onChange={handleLengthChange} />
+                    <input type="number" value={length} onChange={handleLengthChange}/>
                 </label>
-                <br />
+                <br/>
                 <button type="submit" ref={buttonRef}>Generate Password</button>
             </form>
             {password && (
@@ -85,7 +87,7 @@ const PasswordGenerator = () => {
                 </div>
             )}
         </div>
-);
+    );
 };
 
 export default PasswordGenerator;
