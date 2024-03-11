@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../../css/LoginForm/loginForm.css';
+
 const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -13,7 +14,7 @@ const LoginForm = () => {
                 password,
             });
             localStorage.setItem('token', response.data.token);
-            window.location.href = '/';
+            window.location.href = '/password';
         } catch (error) {
             console.error('Failed to login: ', error);
         }

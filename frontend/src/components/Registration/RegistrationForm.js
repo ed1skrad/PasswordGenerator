@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../../css/RegistrationForm/registrationForm.css';
 
-
 const RegistrationForm = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -17,7 +16,7 @@ const RegistrationForm = () => {
                 password,
             });
             localStorage.setItem('token', response.data.token);
-            window.location.href = '/login';
+            window.location.href = '/password'; // Перенаправление на страницу PasswordGenerator
         } catch (error) {
             console.error('Failed to register: ', error);
         }
