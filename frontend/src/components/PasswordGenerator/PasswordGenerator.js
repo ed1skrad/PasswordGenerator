@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../../css/PasswordGenerator/passwordGenerator.css';
 
-
 const PasswordGenerator = () => {
     const [difficulty, setDifficulty] = useState('EASY'); // Default difficulty is EASY
     const [length, setLength] = useState(8); // Default length is 8
@@ -30,6 +29,13 @@ const PasswordGenerator = () => {
         }
     };
 
+    const handleLengthChange = (e) => {
+        const value = parseInt(e.target.value);
+        if (value >= 0 && value <= 255) {
+            setLength(value);
+        }
+    };
+
     return (
         <div>
             <form className="password-generator" onSubmit={handleSubmit}>
@@ -44,7 +50,7 @@ const PasswordGenerator = () => {
                 <br/>
                 <label>
                     Length:
-                    <input type="number" value={length} onChange={(e) => setLength(e.target.value)}/>
+                    <input type="number" value={length} onChange={handleLengthChange} />
                 </label>
                 <br/>
                 <button type="submit">Generate Password</button>
