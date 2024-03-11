@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../css/PasswordGenerator/passwordGenerator.css';
 
 const PasswordGenerator = () => {
-    const [difficulty, setDifficulty] = useState('EASY'); // Default difficulty is EASY
-    const [length, setLength] = useState(8); // Default length is 8
+    const [difficulty, setDifficulty] = useState('EASY');
+    const [length, setLength] = useState(8);
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-
             const config = {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -36,9 +35,16 @@ const PasswordGenerator = () => {
         }
     };
 
+    useEffect(() => {
+        const button = document.querySelector('.password-generator button');
+        setTimeout(() => {
+            button.style.animationPlayState = 'running';
+        }, 30000);
+    }, []);
+
     return (
-        <div>
-            <form className="password-generator" onSubmit={handleSubmit}>
+        <div className="password-generator">
+            <form onSubmit={handleSubmit}>
                 <label>
                     Difficulty:
                     <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
@@ -47,15 +53,15 @@ const PasswordGenerator = () => {
                         <option value="HARD">HARD</option>
                     </select>
                 </label>
-                <br/>
+                <br />
                 <label>
                     Length:
                     <input type="number" value={length} onChange={handleLengthChange} />
                 </label>
-                <br/>
+                <br />
                 <button type="submit">Generate Password</button>
             </form>
-            {password && <p>Generated Password: {password}</p>}
+            {password && <div className="generated-password">Generated Password: {password}</div>}
         </div>
     );
 };
