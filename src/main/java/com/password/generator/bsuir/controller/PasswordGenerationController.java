@@ -86,7 +86,7 @@ public class PasswordGenerationController {
         return ResponseEntity.ok(generatedPasswords);
     }
 
-    @PostMapping("/generate-bulk-passwords")
+    @PostMapping("/generateBulkPasswords")
     public ResponseEntity<Object> generateBulkPasswords(@RequestBody BulkPasswordGenerationDto bulkPasswordGenerationDto) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
 
@@ -97,9 +97,9 @@ public class PasswordGenerationController {
         return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-bulk-passwords/{n}")
+    @DeleteMapping("/deleteBulkPasswords/{n}")
     public ResponseEntity<Object> deleteBulkPasswords(@PathVariable int n){
-        passwordGenerationService.deleteLastGeneratedPasswords(n);
+        passwordGenerationService.deleteAllGeneratedPasswords(n);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

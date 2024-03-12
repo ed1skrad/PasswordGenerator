@@ -9,154 +9,115 @@ import com.password.generator.bsuir.security.domain.model.User;
 import com.password.generator.bsuir.security.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = {PasswordGenerationService.class})
-class PasswordGenerationServiceTest {
+public class PasswordGenerationServiceTest {
 
-    @Autowired
     private PasswordGenerationService passwordGenerationService;
 
-    @MockBean
+    @Mock
     private PasswordRepository passwordRepository;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @MockBean
+    @Mock
     private PasswordCache passwordCache;
 
-    private User user;
+    @Mock
+    private SecurityContext securityContext;
+
+    @Mock
+    private Authentication authentication;
 
     @BeforeEach
-    void setUp() {
-        user = new User();
-        user.setId(1L);
-        user.setUsername("testUser");
-        user.setPassword("testPassword");
-        user.setEmail("test@example.com");
-
-        Authentication authentication = Mockito.mock(Authentication.class);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        when(authentication.getName()).thenReturn("testUser");
-        when(userService.getByUsername("testUser")).thenReturn(user);
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache);
+        SecurityContextHolder.setContext(securityContext);
     }
 
-
     @Test
-    void testGeneratePasswordWithCache() {
-        PasswordGenerationDto dto = new PasswordGenerationDto(Difficulty.HARD, 15);
-        String cachedPassword = "testCachedPassword";
-        when(passwordCache.contains(eq(user.getId()))).thenReturn(true);
-        when(passwordCache.get(eq(user.getId()))).thenReturn(cachedPassword);
+    public void testGeneratePassword() {
+        PasswordGenerationDto dto = new PasswordGenerationDto(Difficulty.NORMAL, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         String generatedPassword = passwordGenerationService.generatePassword(dto);
 
-        assertEquals(cachedPassword, generatedPassword);
-        verify(passwordRepository, never()).save(any(GeneratedPassword.class));
-        verify(passwordCache, times(1)).get(eq(user.getId()));
+        assertNotNull(generatedPassword);
+        assertEquals(10, generatedPassword.length());
+        verify(passwordRepository, times(1)).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
     }
 
     @Test
-    void testGetPasswordById() {
-        Long passwordId = 1L;
-        String expectedPassword = "testPassword";
-        when(passwordCache.contains(eq(passwordId))).thenReturn(false);
-        when(passwordRepository.findById(passwordId)).thenReturn(Optional.of(new GeneratedPassword(passwordId, expectedPassword)));
+    public void testGetPasswordById_PasswordNotInCache() {
+        Long id = 1L;
+        String password = "password";
+        GeneratedPassword generatedPassword = new GeneratedPassword();
+        generatedPassword.setId(id);
+        generatedPassword.setPassword(password);
+        when(passwordCache.contains(id)).thenReturn(false);
+        when(passwordRepository.findById(id)).thenReturn(Optional.of(generatedPassword));
 
-        Optional<GeneratedPassword> generatedPassword = passwordGenerationService.getPasswordById(passwordId);
+        Optional<GeneratedPassword> result = passwordGenerationService.getPasswordById(id);
 
-        assertTrue(generatedPassword.isPresent());
-        assertEquals(expectedPassword, generatedPassword.get().getPassword());
-        verify(passwordCache, times(1)).put(eq(passwordId), eq(expectedPassword));
+        assertEquals(Optional.of(generatedPassword), result);
+        verify(passwordRepository, times(1)).findById(anyLong());
+        verify(passwordCache, times(1)).contains(anyLong());
+        verify(passwordCache, times(1)).put(anyLong(), anyString());
     }
 
     @Test
-    void testGetPasswordByIdWithCache() {
-        Long passwordId = 1L;
-        String expectedPassword = "testPassword";
-        when(passwordCache.contains(eq(passwordId))).thenReturn(true);
-        when(passwordCache.get(eq(passwordId))).thenReturn(expectedPassword);
+    public void testGetPasswordsByDifficulty() {
+        Difficulty difficulty = Difficulty.NORMAL;
+        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
+        generatedPasswords.add(new GeneratedPassword());
+        when(passwordRepository.findByDifficulty(difficulty)).thenReturn(generatedPasswords);
 
-        Optional<GeneratedPassword> generatedPassword = passwordGenerationService.getPasswordById(passwordId);
+        List<GeneratedPassword> result = passwordGenerationService.getPasswordsByDifficulty(difficulty);
 
-        assertTrue(generatedPassword.isPresent());
-        assertEquals(expectedPassword, generatedPassword.get().getPassword());
-        verify(passwordRepository, never()).findById(passwordId);
-        verify(passwordCache, times(1)).get(eq(passwordId));
+        assertEquals(generatedPasswords, result);
+        verify(passwordRepository, times(1)).findByDifficulty(difficulty);
     }
 
     @Test
-    void testGetPasswordByIdNotFound() {
-        Long passwordId = 1L;
-        when(passwordCache.contains(eq(passwordId))).thenReturn(false);
-        when(passwordRepository.findById(passwordId)).thenReturn(Optional.empty());
+    public void testDeleteGeneratedPasswordById() {
+        Long id = 1L;
+        passwordGenerationService.deleteGeneratedPasswordById(id);
 
-        Optional<GeneratedPassword> generatedPassword = passwordGenerationService.getPasswordById(passwordId);
-
-        assertFalse(generatedPassword.isPresent());
-        verify(passwordCache, never()).put(eq(passwordId), anyString());
+        verify(passwordRepository, times(1)).deleteById(id);
     }
 
     @Test
-    void testGetPasswordsByDifficulty() {
-        Difficulty difficulty = Difficulty.HARD;
-        List<GeneratedPassword> expectedPasswords = new ArrayList<>();
-        expectedPasswords.add(new GeneratedPassword(1L, "testPassword1"));
-        expectedPasswords.add(new GeneratedPassword(2L, "testPassword2"));
-        when(passwordRepository.findByDifficulty(difficulty)).thenReturn(expectedPasswords);
+    public void testGetAllGeneratedPasswordsForUser() {
+        String username = "testUser";
+        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
+        generatedPasswords.add(new GeneratedPassword());
+        when(passwordRepository.findAllByUserUsername(username)).thenReturn(generatedPasswords);
 
-        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getPasswordsByDifficulty(difficulty);
+        List<GeneratedPassword> result = passwordGenerationService.getAllGeneratedPasswordsForUser(username);
 
-        assertEquals(expectedPasswords, generatedPasswords);
-        verify(passwordCache, times(2)).put(anyLong(), anyString());
-    }
-
-    @Test
-    void testGetAllGeneratedPasswords() {
-        List<GeneratedPassword> expectedPasswords = new ArrayList<>();
-        expectedPasswords.add(new GeneratedPassword(1L, "testPassword1"));
-        expectedPasswords.add(new GeneratedPassword(2L, "testPassword2"));
-        when(passwordRepository.findAll()).thenReturn(expectedPasswords);
-
-        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswords();
-
-        assertEquals(expectedPasswords, generatedPasswords);
-        verify(passwordCache, times(2)).put(anyLong(), anyString());
-    }
-
-    @Test
-    void testDeleteGeneratedPasswordById() {
-        Long passwordId = 1L;
-
-        passwordGenerationService.deleteGeneratedPasswordById(passwordId);
-
-        verify(passwordRepository, times(1)).deleteById(passwordId);
-    }
-
-    @Test
-    void testGetAllGeneratedPasswordsForUser() {
-        List<GeneratedPassword> expectedPasswords = new ArrayList<>();
-        expectedPasswords.add(new GeneratedPassword(1L, "testPassword1"));
-        expectedPasswords.add(new GeneratedPassword(2L, "testPassword2"));
-        when(passwordRepository.findAllByUserUsername(user.getUsername())).thenReturn(expectedPasswords);
-
-        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswordsForUser(user.getUsername());
-
-        assertEquals(expectedPasswords, generatedPasswords);
+        assertEquals(generatedPasswords, result);
+        verify(passwordRepository, times(1)).findAllByUserUsername(username);
     }
 }

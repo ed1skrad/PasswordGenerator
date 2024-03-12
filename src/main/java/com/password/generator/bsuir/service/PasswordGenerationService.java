@@ -173,11 +173,11 @@ public class PasswordGenerationService {
         return generatedPasswords;
     }
 
-    public void deleteLastGeneratedPasswords(int n) {
-        List<GeneratedPassword> generatedPasswords = passwordRepository.findTopByOrderByIdDesc(n);
+    public void deleteAllGeneratedPasswords(int n) {
+        List<GeneratedPassword> generatedPasswords = passwordRepository.findTopNOrderByIdDesc(n);
         for (GeneratedPassword password : generatedPasswords) {
             passwordRepository.deleteById(password.getId());
+            passwordCache.remove(password.getId());
         }
-        generatedPasswords.forEach(password -> passwordCache.remove(password.getId()));
     }
 }
