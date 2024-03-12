@@ -9,6 +9,7 @@ const PasswordGenerator = () => {
     const [password, setPassword] = useState('');
     const buttonRef = useRef(null);
     const [animationPlaying, setAnimationPlaying] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,8 +43,17 @@ const PasswordGenerator = () => {
         }
     };
 
-    const copyPasswordToClipboard = () => {
+    const copyPasswordToClipboard = (event) => {
         navigator.clipboard.writeText(password);
+        event.preventDefault();
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 2000)
+    };
+
+    const closeAlert = () => {
+        setShowAlert(false);
     };
 
     useEffect(() => {
@@ -79,10 +89,15 @@ const PasswordGenerator = () => {
                     <input type="number" value={length} onChange={handleLengthChange}/>
                 </label>
                 <br/>
-                <button type="submit" ref={buttonRef}>Generate Password</button>
+                <button type="submit" className={"generate-button"} ref={buttonRef}>Generate Password</button>
             </form>
+            {showAlert && (
+                <div className={"alert"}>
+                    <p>Copied to clipboard!</p>
+                </div>
+            )}
             {password && (
-                <div className="generated-password" onClick={copyPasswordToClipboard}>
+                <div className="password-generator-button" onClick={copyPasswordToClipboard}>
                     {password}
                 </div>
             )}

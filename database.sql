@@ -1,5 +1,3 @@
-
-
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
                        username VARCHAR(20) NOT NULL,
@@ -16,18 +14,11 @@ CREATE TABLE generated_password (
                                     user_id BIGINT REFERENCES users(id) ON DELETE CASCADE
 );
 
-ALTER TABLE generated_password ALTER COLUMN difficulty SET DATA TYPE smallint USING CASE
-    WHEN difficulty = 'EASY' THEN 0
-    WHEN difficulty = 'NORMAL' THEN 1
-    WHEN difficulty = 'HARD' THEN 2
-    ELSE NULL
-END;
 
 CREATE TABLE roles (
                        id SERIAL PRIMARY KEY,
                        name VARCHAR(20) UNIQUE NOT NULL
 );
-
 
 CREATE TABLE user_roles (
                             user_id INT,
@@ -39,6 +30,5 @@ CREATE TABLE user_roles (
 
 INSERT INTO roles (name) VALUES ('ROLE_USER');
 INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
-
 
 ALTER TABLE generated_password ALTER COLUMN difficulty TYPE varchar(255);

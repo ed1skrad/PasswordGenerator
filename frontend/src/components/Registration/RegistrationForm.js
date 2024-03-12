@@ -40,7 +40,7 @@ const RegistrationForm = () => {
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </label>
                 <br />
-                <button type="submit">Register</button>
+                <button className={"login-button"} type="submit">Register</button>
             </form>
         </div>
     );

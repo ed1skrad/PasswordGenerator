@@ -117,12 +117,16 @@ public class PasswordGenerationService {
 
     public List<GeneratedPassword> getAllGeneratedPasswords() {
         List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
-        generatedPasswords.forEach(password -> {
-            passwordCache.put(password.getId(), password.getPassword());
-            logger.info("Retrieved password for id '{}' from database.", password.getId());
-        });
+        // Если вы хотите сохранить пароли в кэше и залогировать их, раскомментируйте следующие строки
+    /*
+    generatedPasswords.forEach(password -> {
+        passwordCache.put(password.getId(), password.getPassword());
+        logger.info("Retrieved password for id '{}' from database.", password.getId());
+    });
+    */
         return generatedPasswords;
     }
+
 
     public void deleteGeneratedPasswordById(Long generatedPasswordId) {
         passwordRepository.deleteById(generatedPasswordId);

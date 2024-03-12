@@ -1,13 +1,12 @@
 import React from 'react';
 import LoginForm from './LoginForm';
-import RegistrationForm from '../Registration/RegistrationForm';
 
 const LoginPage = () => {
     return (
-        <div>
+        <div className={"login-body"}>
             <LoginForm />
             <p>
-                Don't have an account? <a href="/register">Sign up</a>
+                Don't have an account? <a className={"signUp"} href="/register">Sign up</a>
             </p>
         </div>
     );
