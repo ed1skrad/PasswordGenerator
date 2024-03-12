@@ -1,5 +1,6 @@
 package com.password.generator.bsuir.controller;
 
+import com.password.generator.bsuir.dto.BulkPasswordGenerationDto;
 import com.password.generator.bsuir.dto.PasswordGenerationDto;
 import com.password.generator.bsuir.model.GeneratedPassword;
 import com.password.generator.bsuir.model.difficultyenum.Difficulty;
@@ -83,5 +84,22 @@ public class PasswordGenerationController {
     public ResponseEntity<List<String>> generatePasswords(@RequestBody List<PasswordGenerationDto> dtos, @PathVariable int count) {
         List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
         return ResponseEntity.ok(generatedPasswords);
+    }
+
+    @PostMapping("/generate-bulk-passwords")
+    public ResponseEntity<Object> generateBulkPasswords(@RequestBody BulkPasswordGenerationDto bulkPasswordGenerationDto) {
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
+
+        if (generatedPasswords.isEmpty()) {
+            return new ResponseEntity<>("No passwords generated", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-bulk-passwords/{n}")
+    public ResponseEntity<Object> deleteBulkPasswords(@PathVariable int n){
+        passwordGenerationService.deleteLastGeneratedPasswords(n);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

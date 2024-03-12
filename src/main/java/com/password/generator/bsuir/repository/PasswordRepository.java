@@ -15,4 +15,7 @@ public interface PasswordRepository extends JpaRepository<GeneratedPassword, Lon
 
     @Query("SELECT gp FROM GeneratedPassword gp JOIN gp.user u WHERE u.username = :username")
     List<GeneratedPassword> findAllByUserUsername(@Param("username") String username);
+
+    @Query("SELECT gp FROM GeneratedPassword gp ORDER BY gp.id DESC")
+    List<GeneratedPassword> findTopByOrderByIdDesc(int n);
 }
