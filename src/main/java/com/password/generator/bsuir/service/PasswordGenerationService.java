@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -79,7 +78,7 @@ public class PasswordGenerationService {
             Difficulty difficulty = dto.getDifficulty();
 
             passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty, currentUser));
-            //passwordCache.put(userId, generatedPassword);
+            passwordCache.put(userId, generatedPassword);
 
             return generatedPassword;
         }
@@ -97,14 +96,18 @@ public class PasswordGenerationService {
         if (passwordCache.contains(id)) {
             logger.info("Retrieved password for id '{}' from cache.", id);
             String cachedPassword = passwordCache.get(id);
-            return Optional.of(new GeneratedPassword(id, cachedPassword));
+            GeneratedPassword cachedGeneratedPassword = new GeneratedPassword(id, cachedPassword);
+            cachedGeneratedPassword.setDifficulty(passwordRepository.findById(id).get().getDifficulty());
+            cachedGeneratedPassword.setUser(passwordRepository.findById(id).get().getUser());
+            return Optional.of(cachedGeneratedPassword);
         } else {
-            logger.info("Retrieved password for id '{}' from database.", id);
+            logger.info("Retrieving password for id '{}' from database.", id);
             Optional<GeneratedPassword> generatedPassword = passwordRepository.findById(id);
-            generatedPassword.ifPresent(password -> passwordCache.put(id, password.getPassword()));
+            generatedPassword.ifPresent(password -> passwordCache.put(id, String.valueOf(password)));
             return generatedPassword;
         }
     }
+
 
     public List<GeneratedPassword> getPasswordsByDifficulty(Difficulty difficulty) {
         List<GeneratedPassword> generatedPasswords = passwordRepository.findByDifficulty(difficulty);
@@ -116,16 +119,17 @@ public class PasswordGenerationService {
     }
 
     public List<GeneratedPassword> getAllGeneratedPasswords() {
-        List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
-        // Если вы хотите сохранить пароли в кэше и залогировать их, раскомментируйте следующие строки
-    /*
-    generatedPasswords.forEach(password -> {
-        passwordCache.put(password.getId(), password.getPassword());
-        logger.info("Retrieved password for id '{}' from database.", password.getId());
-    });
-    */
-        return generatedPasswords;
+        if (passwordCache.getAllGeneratedPasswords() != null) {
+            logger.info("Retrieved all generated passwords from cache.");
+            return passwordCache.getAllGeneratedPasswords();
+        } else {
+            logger.info("Retrieving all generated passwords from database.");
+            List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
+            passwordCache.putAllGeneratedPasswords(generatedPasswords);
+            return generatedPasswords;
+        }
     }
+
 
 
     public void deleteGeneratedPasswordById(Long generatedPasswordId) {

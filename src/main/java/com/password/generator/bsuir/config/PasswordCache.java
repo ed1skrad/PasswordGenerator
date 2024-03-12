@@ -1,13 +1,18 @@
 package com.password.generator.bsuir.config;
 
+import com.password.generator.bsuir.model.GeneratedPassword;
 import org.springframework.stereotype.Component;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class PasswordCache {
 
-    private final Map<Long, String> cache = new HashMap<>();
+    private final ConcurrentMap<Long, String> cache = new ConcurrentHashMap<>();
+
+    private List<GeneratedPassword> allGeneratedPasswords = null;
 
     public void put(Long id, String password) {
         cache.put(id, password);
@@ -28,4 +33,14 @@ public class PasswordCache {
     public void clear() {
         cache.clear();
     }
+
+    public List<GeneratedPassword> getAllGeneratedPasswords() {
+        return allGeneratedPasswords;
+    }
+
+    public void putAllGeneratedPasswords(List<GeneratedPassword> generatedPasswords) {
+        allGeneratedPasswords = generatedPasswords;
+        generatedPasswords.forEach(password -> cache.put(password.getId(), password.getPassword()));
+    }
 }
+
