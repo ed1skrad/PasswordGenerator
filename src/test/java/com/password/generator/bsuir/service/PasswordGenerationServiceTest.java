@@ -12,23 +12,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class PasswordGenerationServiceTest {
-
-    private PasswordGenerationService passwordGenerationService;
 
     @Mock
     private PasswordRepository passwordRepository;
@@ -45,8 +41,8 @@ public class PasswordGenerationServiceTest {
     @Mock
     private Authentication authentication;
 
-    @Mock
-    private User user;
+    @MockBean
+    private PasswordGenerationService passwordGenerationService;
 
     @BeforeEach
     public void setup() {
@@ -74,7 +70,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetPasswordById_PasswordNotInCache() {
+    public void testGetPasswordByIdPasswordNotInCache() {
         Long id = 1L;
         String password = "password";
         GeneratedPassword generatedPassword = new GeneratedPassword();
@@ -142,6 +138,101 @@ public class PasswordGenerationServiceTest {
         verify(passwordRepository, times(1)).findTopNOrderByIdDesc(n);
         verify(passwordRepository, times(n)).deleteById(anyLong());
         verify(passwordCache, times(n)).remove(anyLong());
+    }
+
+    @Test
+    public void testGetPasswordsByDifficulty_NoPasswordsFound() {
+        Difficulty difficulty = Difficulty.HARD;
+        when(passwordRepository.findByDifficulty(difficulty)).thenReturn(Collections.emptyList());
+
+        List<GeneratedPassword> result = passwordGenerationService.getPasswordsByDifficulty(difficulty);
+
+        assertTrue(result.isEmpty());
+        verify(passwordRepository, times(1)).findByDifficulty(difficulty);
+    }
+
+    @Test
+    public void testGeneratePasswordString() {
+        PasswordGenerationDto dto = new PasswordGenerationDto(Difficulty.NORMAL, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        String generatedPassword = passwordGenerationService.generatePasswordString(dto);
+
+        assertNotNull(generatedPassword);
+        assertEquals(10, generatedPassword.length());
+        verify(passwordRepository, times(1)).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    public void testGenerateBulkPasswords() {
+        BulkPasswordGenerationDto bulkPasswordGenerationDto = new BulkPasswordGenerationDto(2, Difficulty.NORMAL, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
+
+        assertNotNull(generatedPasswords);
+        assertEquals(2, generatedPasswords.size());
+        verify(passwordRepository, times(2)).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    public void testGeneratePasswords() {
+        List<PasswordGenerationDto> dtos = new ArrayList<>();
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        dtos.add(new PasswordGenerationDto(Difficulty.NORMAL, 10));
+        int count = 2;
+
+        List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
+
+        assertNotNull(generatedPasswords);
+        assertEquals(2, generatedPasswords.size());
+        verify(passwordRepository, times(2)).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    public void testGetCurrentUser() {
+        String username = "testUser";
+        User user = new User();
+        user.setId(1L);
+        user.setUsername(username);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn(username);
+        when(userService.getByUsername(username)).thenReturn(user);
+
+        User currentUser = passwordGenerationService.getCurrentUser();
+
+        assertNotNull(currentUser);
+        assertEquals(user, currentUser);
+        verify(securityContext, times(1)).getAuthentication();
+        verify(authentication, times(1)).getName();
+        verify(userService, times(1)).getByUsername(username);
+    }
+
+    @Test
+    public void testGetCharacterPool() {
+        PasswordGenerationService passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache);
+        assertEquals("abcdefghijklmnopqrstuvwxyz", passwordGenerationService.getCharacterPool(Difficulty.EASY));
+        assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", passwordGenerationService.getCharacterPool(Difficulty.NORMAL));
+        assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+", passwordGenerationService.getCharacterPool(Difficulty.HARD));
     }
 
 }

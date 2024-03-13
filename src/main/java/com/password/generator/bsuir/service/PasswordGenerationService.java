@@ -53,13 +53,13 @@ public class PasswordGenerationService {
         return generatedPassword;
     }
 
-    private User getCurrentUser() {
+    User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return userService.getByUsername(username);
     }
 
-    private String generatePasswordString(PasswordGenerationDto dto) {
+    String generatePasswordString(PasswordGenerationDto dto) {
         User currentUser = getCurrentUser();
         Long userId = currentUser.getId();
 
@@ -86,7 +86,7 @@ public class PasswordGenerationService {
         }
     }
 
-    private String getCharacterPool(Difficulty difficulty) {
+    String getCharacterPool(Difficulty difficulty) {
         return switch (difficulty) {
             case EASY -> LOWERCASE_CHARS;
             case NORMAL -> LOWERCASE_CHARS + UPPERCASE_CHARS + DIGITS;

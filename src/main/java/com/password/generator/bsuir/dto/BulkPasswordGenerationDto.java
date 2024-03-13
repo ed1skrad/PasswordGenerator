@@ -31,4 +31,9 @@ public class BulkPasswordGenerationDto {
         this.length = length;
     }
 
+    public BulkPasswordGenerationDto(int count, Difficulty difficulty, int length) {
+        this.count = count;
+        this.difficulty = difficulty;
+        this.length = length;
+    }
 }

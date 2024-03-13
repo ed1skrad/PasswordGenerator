@@ -66,5 +66,12 @@ public class GeneratedPassword {
         this.id = id;
         this.password = password;
     }
+
+    public GeneratedPassword(Long id, String password, Difficulty difficulty, User user) {
+        this.id = id;
+        this.password = password;
+        this.difficulty = difficulty;
+        this.user = user;
+    }
 }
 
