@@ -30,4 +30,5 @@ public class BulkPasswordGenerationDto {
     public void setLength(int length) {
         this.length = length;
     }
+
 }

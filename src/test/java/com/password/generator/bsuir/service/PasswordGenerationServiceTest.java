@@ -1,6 +1,7 @@
 package com.password.generator.bsuir.service;
 
 import com.password.generator.bsuir.config.PasswordCache;
+import com.password.generator.bsuir.dto.BulkPasswordGenerationDto;
 import com.password.generator.bsuir.dto.PasswordGenerationDto;
 import com.password.generator.bsuir.model.GeneratedPassword;
 import com.password.generator.bsuir.model.difficultyenum.Difficulty;
@@ -43,6 +44,9 @@ public class PasswordGenerationServiceTest {
 
     @Mock
     private Authentication authentication;
+
+    @Mock
+    private User user;
 
     @BeforeEach
     public void setup() {
@@ -120,4 +124,24 @@ public class PasswordGenerationServiceTest {
         assertEquals(generatedPasswords, result);
         verify(passwordRepository, times(1)).findAllByUserUsername(username);
     }
+    @Test
+    public void testDeleteAllGeneratedPasswords() {
+        int n = 5;
+        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            GeneratedPassword generatedPassword = new GeneratedPassword();
+            generatedPassword.setId((long) i);
+            generatedPasswords.add(generatedPassword);
+        }
+        when(passwordRepository.findTopNOrderByIdDesc(n)).thenReturn(generatedPasswords);
+        doNothing().when(passwordRepository).deleteById(anyLong());
+        doNothing().when(passwordCache).remove(anyLong());
+
+        passwordGenerationService.deleteAllGeneratedPasswords(n);
+
+        verify(passwordRepository, times(1)).findTopNOrderByIdDesc(n);
+        verify(passwordRepository, times(n)).deleteById(anyLong());
+        verify(passwordCache, times(n)).remove(anyLong());
+    }
+
 }
