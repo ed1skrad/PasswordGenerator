@@ -38,11 +38,14 @@ public class PasswordGenerationService {
     private final UserService userService;
     private final PasswordCache passwordCache;
 
+    private final RequestCounterService requestCounterService;
+
     @Autowired
-    public PasswordGenerationService(PasswordRepository passwordRepository, UserService userService, PasswordCache passwordCache) {
+    public PasswordGenerationService(PasswordRepository passwordRepository, UserService userService, PasswordCache passwordCache, RequestCounterService requestCounterService) {
         this.passwordRepository = passwordRepository;
         this.userService = userService;
         this.passwordCache = passwordCache;
+        this.requestCounterService = requestCounterService;
     }
 
     public String generatePassword(PasswordGenerationDto dto) {
@@ -160,15 +163,14 @@ public class PasswordGenerationService {
     }
 
     public List<GeneratedPassword> generateBulkPasswords(BulkPasswordGenerationDto bulkPasswordGenerationDto) {
-        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
-        for (int i = 0; i < bulkPasswordGenerationDto.getCount(); i++) {
-            PasswordGenerationDto passwordGenerationDto = new PasswordGenerationDto(bulkPasswordGenerationDto.getDifficulty(), bulkPasswordGenerationDto.getLength());
-            String generatedPassword = generatePasswordString(passwordGenerationDto);
-            User currentUser = getCurrentUser();
-            GeneratedPassword generatedPasswordObject = new GeneratedPassword(generatedPassword, bulkPasswordGenerationDto.getDifficulty(), currentUser);
-            generatedPasswords.add(generatedPasswordObject);
-            logger.info("Bulk passwords generated successfully.");
-        }
+        List<GeneratedPassword> generatedPasswords = Stream.generate(() -> {
+                    PasswordGenerationDto passwordGenerationDto = new PasswordGenerationDto(bulkPasswordGenerationDto.getDifficulty(), bulkPasswordGenerationDto.getLength());
+                    String generatedPassword = generatePasswordString(passwordGenerationDto);
+                    User currentUser = getCurrentUser();
+                    return new GeneratedPassword(generatedPassword, bulkPasswordGenerationDto.getDifficulty(), currentUser);
+                })
+                .limit(bulkPasswordGenerationDto.getCount())
+                .collect(Collectors.toList());
 
         passwordRepository.saveAll(generatedPasswords);
         logger.info("Bulk passwords saved successfully.");
@@ -178,11 +180,13 @@ public class PasswordGenerationService {
 
     public void deleteAllGeneratedPasswords() {
         List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
-        for (GeneratedPassword password : generatedPasswords) {
-            passwordRepository.deleteById(password.getId());
-            passwordCache.remove(password.getId());
-            System.out.println("Removed from cache");
-        }
+        generatedPasswords
+                .forEach(password -> {
+                    passwordRepository.deleteById(password.getId());
+                    passwordCache.remove(password.getId());
+                    System.out.println("Removed from cache");
+                });
         passwordCache.clear();
     }
+
 }

@@ -43,11 +43,13 @@ class PasswordGenerationServiceTest {
 
     @MockBean
     private PasswordGenerationService passwordGenerationService;
+    @Mock
+    private RequestCounterService requestCounterService;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache);
+        passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache, requestCounterService);
         SecurityContextHolder.setContext(securityContext);
     }
 
@@ -229,7 +231,7 @@ class PasswordGenerationServiceTest {
 
     @Test
     void testGetCharacterPool() {
-        PasswordGenerationService passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache);
+        PasswordGenerationService passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache, requestCounterService);
         assertEquals("abcdefghijklmnopqrstuvwxyz", passwordGenerationService.getCharacterPool(Difficulty.EASY));
         assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", passwordGenerationService.getCharacterPool(Difficulty.NORMAL));
         assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+", passwordGenerationService.getCharacterPool(Difficulty.HARD));
