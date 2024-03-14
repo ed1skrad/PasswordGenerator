@@ -114,8 +114,6 @@ public class PasswordGenerationService {
         }
     }
 
-
-
     public List<GeneratedPassword> getPasswordsByDifficulty(Difficulty difficulty) {
         List<GeneratedPassword> generatedPasswords = passwordRepository.findByDifficulty(difficulty);
         generatedPasswords.forEach(password -> {
@@ -126,9 +124,9 @@ public class PasswordGenerationService {
     }
 
     public List<GeneratedPassword> getAllGeneratedPasswords() {
-        if (passwordCache.getAllGeneratedPasswords() != null) {
+        if (passwordCache.getAllCachedPasswords() != null) {
             logger.info("Retrieved all generated passwords from cache.");
-            return passwordCache.getAllGeneratedPasswords();
+            return passwordCache.getAllCachedPasswords();
         } else {
             logger.info("Retrieving all generated passwords from database.");
             List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
@@ -178,11 +176,14 @@ public class PasswordGenerationService {
         return generatedPasswords;
     }
 
-    public void deleteAllGeneratedPasswords(int n) {
-        List<GeneratedPassword> generatedPasswords = passwordRepository.findTopNOrderByIdDesc(n);
+    public void deleteAllGeneratedPasswords() {
+        List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
         for (GeneratedPassword password : generatedPasswords) {
             passwordRepository.deleteById(password.getId());
             passwordCache.remove(password.getId());
+            System.out.println("Removed from cache");
         }
+        passwordCache.clear();
     }
+
 }

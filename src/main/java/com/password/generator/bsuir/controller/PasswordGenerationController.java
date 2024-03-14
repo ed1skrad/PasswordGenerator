@@ -80,12 +80,6 @@ public class PasswordGenerationController {
         return ResponseEntity.ok(generatedPasswords);
     }
 
-    @PostMapping("/generatePasswords/{count}")
-    public ResponseEntity<List<String>> generatePasswords(@RequestBody List<PasswordGenerationDto> dtos, @PathVariable int count) {
-        List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
-        return ResponseEntity.ok(generatedPasswords);
-    }
-
     @PostMapping("/generateBulkPasswords")
     public ResponseEntity<Object> generateBulkPasswords(@RequestBody BulkPasswordGenerationDto bulkPasswordGenerationDto) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
@@ -97,9 +91,9 @@ public class PasswordGenerationController {
         return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteBulkPasswords/{n}")
-    public ResponseEntity<Object> deleteBulkPasswords(@PathVariable int n){
-        passwordGenerationService.deleteAllGeneratedPasswords(n);
+    @DeleteMapping("/deleteAllBulkPasswords")
+    public ResponseEntity<Object> deleteBulkPasswords(){
+        passwordGenerationService.deleteAllGeneratedPasswords();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

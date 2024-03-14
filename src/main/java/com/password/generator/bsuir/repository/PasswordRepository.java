@@ -17,6 +17,6 @@ public interface PasswordRepository extends JpaRepository<GeneratedPassword, Lon
     List<GeneratedPassword> findAllByUserUsername(@Param("username") String username);
 
     @Query("SELECT gp FROM GeneratedPassword gp ORDER BY gp.id DESC")
-    List<GeneratedPassword> findTopNOrderByIdDesc(int n);
+    List<GeneratedPassword> findTopNOrderByIdDesc();
 
 }

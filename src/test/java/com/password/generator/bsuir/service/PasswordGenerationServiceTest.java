@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-public class PasswordGenerationServiceTest {
+class PasswordGenerationServiceTest {
 
     @Mock
     private PasswordRepository passwordRepository;
@@ -129,13 +129,13 @@ public class PasswordGenerationServiceTest {
             generatedPassword.setId((long) i);
             generatedPasswords.add(generatedPassword);
         }
-        when(passwordRepository.findTopNOrderByIdDesc(n)).thenReturn(generatedPasswords);
+        when(passwordRepository.findTopNOrderByIdDesc()).thenReturn(generatedPasswords);
         doNothing().when(passwordRepository).deleteById(anyLong());
         doNothing().when(passwordCache).remove(anyLong());
 
-        passwordGenerationService.deleteAllGeneratedPasswords(n);
+        passwordGenerationService.deleteAllGeneratedPasswords();
 
-        verify(passwordRepository, times(1)).findTopNOrderByIdDesc(n);
+        verify(passwordRepository, times(1)).findTopNOrderByIdDesc();
         verify(passwordRepository, times(n)).deleteById(anyLong());
         verify(passwordCache, times(n)).remove(anyLong());
     }
