@@ -45,14 +45,14 @@ public class PasswordGenerationServiceTest {
     private PasswordGenerationService passwordGenerationService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache);
         SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
-    public void testGeneratePassword() {
+    void testGeneratePassword() {
         PasswordGenerationDto dto = new PasswordGenerationDto(Difficulty.NORMAL, 10);
         User user = new User();
         user.setId(1L);
@@ -70,7 +70,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetPasswordByIdPasswordNotInCache() {
+    void testGetPasswordByIdPasswordNotInCache() {
         Long id = 1L;
         String password = "password";
         GeneratedPassword generatedPassword = new GeneratedPassword();
@@ -88,7 +88,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetPasswordsByDifficulty() {
+    void testGetPasswordsByDifficulty() {
         Difficulty difficulty = Difficulty.NORMAL;
         List<GeneratedPassword> generatedPasswords = new ArrayList<>();
         generatedPasswords.add(new GeneratedPassword());
@@ -101,7 +101,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testDeleteGeneratedPasswordById() {
+    void testDeleteGeneratedPasswordById() {
         Long id = 1L;
         passwordGenerationService.deleteGeneratedPasswordById(id);
 
@@ -109,7 +109,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetAllGeneratedPasswordsForUser() {
+    void testGetAllGeneratedPasswordsForUser() {
         String username = "testUser";
         List<GeneratedPassword> generatedPasswords = new ArrayList<>();
         generatedPasswords.add(new GeneratedPassword());
@@ -121,7 +121,7 @@ public class PasswordGenerationServiceTest {
         verify(passwordRepository, times(1)).findAllByUserUsername(username);
     }
     @Test
-    public void testDeleteAllGeneratedPasswords() {
+    void testDeleteAllGeneratedPasswords() {
         int n = 5;
         List<GeneratedPassword> generatedPasswords = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -141,7 +141,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetPasswordsByDifficulty_NoPasswordsFound() {
+    void testGetPasswordsByDifficulty_NoPasswordsFound() {
         Difficulty difficulty = Difficulty.HARD;
         when(passwordRepository.findByDifficulty(difficulty)).thenReturn(Collections.emptyList());
 
@@ -152,7 +152,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGeneratePasswordString() {
+    void testGeneratePasswordString() {
         PasswordGenerationDto dto = new PasswordGenerationDto(Difficulty.NORMAL, 10);
         User user = new User();
         user.setId(1L);
@@ -170,7 +170,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGenerateBulkPasswords() {
+    void testGenerateBulkPasswords() {
         BulkPasswordGenerationDto bulkPasswordGenerationDto = new BulkPasswordGenerationDto(2, Difficulty.NORMAL, 10);
         User user = new User();
         user.setId(1L);
@@ -188,7 +188,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGeneratePasswords() {
+    void testGeneratePasswords() {
         List<PasswordGenerationDto> dtos = new ArrayList<>();
         User user = new User();
         user.setId(1L);
@@ -208,7 +208,7 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetCurrentUser() {
+    void testGetCurrentUser() {
         String username = "testUser";
         User user = new User();
         user.setId(1L);
@@ -228,11 +228,10 @@ public class PasswordGenerationServiceTest {
     }
 
     @Test
-    public void testGetCharacterPool() {
+    void testGetCharacterPool() {
         PasswordGenerationService passwordGenerationService = new PasswordGenerationService(passwordRepository, userService, passwordCache);
         assertEquals("abcdefghijklmnopqrstuvwxyz", passwordGenerationService.getCharacterPool(Difficulty.EASY));
         assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", passwordGenerationService.getCharacterPool(Difficulty.NORMAL));
         assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+", passwordGenerationService.getCharacterPool(Difficulty.HARD));
     }
-
 }

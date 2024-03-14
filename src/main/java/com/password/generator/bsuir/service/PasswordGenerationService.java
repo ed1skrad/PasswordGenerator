@@ -80,7 +80,7 @@ public class PasswordGenerationService {
             Difficulty difficulty = dto.getDifficulty();
 
             passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty, currentUser));
-            //passwordCache.put(userId, generatedPassword);
+            passwordCache.put(userId, generatedPassword);
 
             return generatedPassword;
         }
@@ -99,8 +99,12 @@ public class PasswordGenerationService {
             logger.info("Retrieved password for id '{}' from cache.", id);
             String cachedPassword = passwordCache.get(id);
             GeneratedPassword cachedGeneratedPassword = new GeneratedPassword(id, cachedPassword);
-            cachedGeneratedPassword.setDifficulty(passwordRepository.findById(id).get().getDifficulty());
-            cachedGeneratedPassword.setUser(passwordRepository.findById(id).get().getUser());
+            Optional<GeneratedPassword> optionalGeneratedPassword = passwordRepository.findById(id);
+            if (optionalGeneratedPassword.isPresent()) {
+                GeneratedPassword password = optionalGeneratedPassword.get();
+                cachedGeneratedPassword.setDifficulty(password.getDifficulty());
+                cachedGeneratedPassword.setUser(password.getUser());
+            }
             return Optional.of(cachedGeneratedPassword);
         } else {
             logger.info("Retrieving password for id '{}' from database.", id);
@@ -109,6 +113,7 @@ public class PasswordGenerationService {
             return generatedPassword;
         }
     }
+
 
 
     public List<GeneratedPassword> getPasswordsByDifficulty(Difficulty difficulty) {
@@ -148,7 +153,7 @@ public class PasswordGenerationService {
         List<String> generatedPasswords = dtos.stream()
                 .flatMap(dto -> Stream.generate(() -> generatePasswordString(dto))
                         .limit(count))
-                .collect(Collectors.toList());
+                .toList();
 
         logger.info("Passwords generated successfully.");
 
