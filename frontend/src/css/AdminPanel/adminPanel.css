@@ -1,0 +1,66 @@
+body {
+    color: #FFF;
+}
+
+.pass-block {
+    margin: 3em;
+    display: flex;
+    flex: 1;
+}
+
+.list-container {
+    max-height: 400px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.6px);
+    -webkit-backdrop-filter: blur(6.6px);
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    scrollbar-width: thin;
+    transition: height 0.3s ease;
+}
+
+.list-container.expanded {
+    height: auto;
+}
+
+span {
+    padding-right: 1em;
+}
+
+button{
+    color: #FFF;
+    background: rgba(255, 255, 255, 0.29);
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.6px);
+    -webkit-backdrop-filter: blur(6.6px);
+    border: none;
+}
+
+.button-main {
+
+    height: 2em;
+    font-size: 1em;
+    font-weight: bold;
+    margin: 1em;
+    margin-left: 0;
+}
+
+button:hover{
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.delAll-button{
+    font-size: large;
+}
+
+input{
+    height: 2em;
+    background: rgba(255, 255, 255, 0.29);
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.6px);
+    color: white;
+}
