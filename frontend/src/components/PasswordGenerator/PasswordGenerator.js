@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../../css/PasswordGenerator/passwordGenerator.css';
 import StarBackground from "../Background/StarBackground";
+import API_URL from "../../config/config";
 
 const PasswordGenerator = () => {
     const [difficulty, setDifficulty] = useState('EASY');
@@ -25,7 +26,7 @@ const PasswordGenerator = () => {
                 }
             };
 
-            const response = await axios.post('http://localhost:8080/api/password/generatePassword', {
+            const response = await axios.post(`${API_URL}/api/password/generatePassword`, {
                 difficulty,
                 length,
             }, config);

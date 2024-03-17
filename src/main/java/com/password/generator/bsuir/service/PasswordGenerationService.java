@@ -76,6 +76,7 @@ public class PasswordGenerationService {
         Difficulty difficulty = dto.getDifficulty();
 
         passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty, currentUser));
+        requestCounterService.increment();
         return generatedPassword;
     }
 

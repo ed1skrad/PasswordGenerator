@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../../css/RegistrationForm/registrationForm.css';
+import API_URL from "../../config/config";
 
 const RegistrationForm = () => {
     const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ const RegistrationForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/signup', {
+            const response = await axios.post(`${API_URL}/api/auth/signup`, {
                 username,
                 email,
                 password,

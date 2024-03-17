@@ -71,7 +71,6 @@ public class PasswordGenerationController {
     }
 
     @GetMapping("/user/{username}/passwords")
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<GeneratedPassword>> getAllGeneratedPasswordsForUser(@PathVariable String username) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswordsForUser(username);
         if (generatedPasswords.isEmpty()) {

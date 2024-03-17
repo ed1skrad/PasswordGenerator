@@ -23,7 +23,6 @@ public class GeneratedPassword {
     public GeneratedPassword() {
     }
 
-
     public Long getId () {
         return id;
     }

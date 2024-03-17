@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../../css/AdminPanel/adminPanel.css';
+import API_URL from "../../config/config";
 
 const AdminPanel = () => {
     const [list, setList] = useState([]);
@@ -8,7 +9,7 @@ const AdminPanel = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get('http://localhost:8080/api/password/all');
+            const response = await axios.get(`${API_URL}/api/password/all`);
             localStorage.setItem('token', response.data.token);
             window.location.href = '/password';
 
