@@ -4,11 +4,15 @@ services:
     image: frontend:0.0.1
     build: ./frontend
     restart: always
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
     ports:
       - '3000:3000'
     volumes:
       - /app/node_modules
       - ./frontend:/app
+    depends_on:
+      - backend
   db:
     image: postgres
     environment:
@@ -30,13 +34,5 @@ services:
       - "8080:8080"
     depends_on:
       - db
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3001:3000"
-    depends_on:
-      - backend
 volumes:
   postgres_data:
