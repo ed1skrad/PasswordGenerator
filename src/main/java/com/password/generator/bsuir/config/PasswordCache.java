@@ -38,8 +38,4 @@ public class PasswordCache {
                 .map(entry -> new GeneratedPassword(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
-
-    public void putAllGeneratedPasswords(List<GeneratedPassword> generatedPasswords) {
-        generatedPasswords.forEach(password -> cache.put(password.getId(), password.getPassword()));
-    }
 }
