@@ -24,12 +24,16 @@ public class AuthController {
 
     @PostMapping("/signup")
     public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
-        return authenticationService.signUp(request);
+        JwtAuthenticationResponse response = authenticationService.signUp(request);
+        response.setUsername(request.getUsername());
+        return response;
     }
 
     @PostMapping("/signin")
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
-        return authenticationService.signIn(request);
+        JwtAuthenticationResponse response = authenticationService.signIn(request);
+        response.setUsername(request.getUsername());
+        return response;
     }
 
     @PostMapping("/logout")

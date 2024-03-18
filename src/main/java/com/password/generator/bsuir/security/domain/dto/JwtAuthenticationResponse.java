@@ -4,6 +4,8 @@ public class JwtAuthenticationResponse {
 
     private String token;
 
+    private String username;
+
     public JwtAuthenticationResponse() {
     }
     public JwtAuthenticationResponse(String token) {
@@ -16,5 +18,13 @@ public class JwtAuthenticationResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
