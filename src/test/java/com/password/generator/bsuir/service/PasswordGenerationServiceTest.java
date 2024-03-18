@@ -189,27 +189,6 @@ class PasswordGenerationServiceTest {
         verify(passwordRepository, times(2)).save(any(GeneratedPassword.class));
         verify(passwordCache, never()).put(anyLong(), anyString());
     }
-
-    @Test
-    void testGeneratePasswords() {
-        List<PasswordGenerationDto> dtos = new ArrayList<>();
-        User user = new User();
-        user.setId(1L);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("testUser");
-        when(userService.getByUsername("testUser")).thenReturn(user);
-        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        dtos.add(new PasswordGenerationDto(Difficulty.NORMAL, 10));
-        int count = 2;
-
-        List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
-
-        assertNotNull(generatedPasswords);
-        assertEquals(2, generatedPasswords.size());
-        verify(passwordRepository, times(2)).save(any(GeneratedPassword.class));
-        verify(passwordCache, never()).put(anyLong(), anyString());
-    }
-
     @Test
     void testGetCurrentUser() {
         String username = "testUser";
