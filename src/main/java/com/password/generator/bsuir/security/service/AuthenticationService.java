@@ -1,6 +1,8 @@
 package com.password.generator.bsuir.security.service;
 
 
+import com.password.generator.bsuir.security.config.InvalidTokenRepository;
+import com.password.generator.bsuir.security.config.JwtAuthenticationFilter;
 import com.password.generator.bsuir.security.domain.dto.*;
 import com.password.generator.bsuir.security.domain.model.Role;
 import com.password.generator.bsuir.security.domain.model.RoleEnum;
@@ -10,11 +12,13 @@ import com.password.generator.bsuir.security.exception.RoleNotFoundException;
 import com.password.generator.bsuir.security.exception.UsernameTakenException;
 import com.password.generator.bsuir.security.repository.RoleRepository;
 import com.password.generator.bsuir.security.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,17 +35,20 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    private final InvalidTokenRepository invalidTokenRepository;
+
     private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Autowired
     public AuthenticationService(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
-                                 UserRepository userRepository, RoleRepository roleRepository) {
+                                 UserRepository userRepository, RoleRepository roleRepository, InvalidTokenRepository invalidTokenRepository) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.invalidTokenRepository = invalidTokenRepository;
     }
 
     @Transactional
@@ -62,12 +69,9 @@ public class AuthenticationService {
 
         Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
                 .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
-        Role adminRole = roleRepository.findByName(RoleEnum.ROLE_ADMIN)
-                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
 
         List<Role> roles = new ArrayList<>();
         roles.add(userRole);
-        roles.add(adminRole);
 
         user.setRole(roles);
         userRepository.save(user);
@@ -117,5 +121,25 @@ public class AuthenticationService {
         }
 
         userRepository.save(user);
+    }
+
+    public void logout(HttpServletRequest request) {
+        String authHeader = request.getHeader(JwtAuthenticationFilter.HEADER_NAME);
+        if (authHeader != null && authHeader.startsWith(JwtAuthenticationFilter.BEARER_PREFIX)) {
+            String jwt = authHeader.substring(JwtAuthenticationFilter.BEARER_PREFIX.length());
+            invalidTokenRepository.addToken(jwt);
+        }
+        SecurityContextHolder.clearContext();
+    }
+
+    public RoleEnum findUserRoleByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+
+        Role userRole = user.getRole().stream()
+                .findFirst()
+                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
+
+        return userRole.getName();
     }
 }

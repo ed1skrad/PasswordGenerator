@@ -28,10 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
 
+    private final InvalidTokenRepository invalidTokenRepository;
+
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserService userService, InvalidTokenRepository invalidTokenRepository) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.invalidTokenRepository = invalidTokenRepository;
     }
 
     @Override
@@ -49,6 +52,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String jwt = authHeader.substring(BEARER_PREFIX.length());
         String username = jwtService.extractUserName(jwt);
+
+        if (invalidTokenRepository.isTokenInvalid(jwt)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(username);

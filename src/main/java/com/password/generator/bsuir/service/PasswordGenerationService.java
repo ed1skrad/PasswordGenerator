@@ -37,7 +37,6 @@ public class PasswordGenerationService {
     private final PasswordRepository passwordRepository;
     private final UserService userService;
     private final PasswordCache passwordCache;
-
     private final RequestCounterService requestCounterService;
 
     @Autowired
@@ -189,5 +188,4 @@ public class PasswordGenerationService {
                 });
         passwordCache.clear();
     }
-
 }
