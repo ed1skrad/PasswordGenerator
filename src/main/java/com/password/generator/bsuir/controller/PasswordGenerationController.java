@@ -26,6 +26,7 @@ public class PasswordGenerationController {
     }
 
     @PostMapping("/generatePassword")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> generatePassword(@RequestBody PasswordGenerationDto dto) {
         if (dto.getLength() > 255) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password length should not more than 255 characters");
@@ -37,6 +38,7 @@ public class PasswordGenerationController {
         return ResponseEntity.ok(generatedPassword);
     }
     @GetMapping("/id/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getPasswordById(@PathVariable Long id) {
         Optional<GeneratedPassword> generatedPassword = passwordGenerationService.getPasswordById(id);
         if (generatedPassword.isEmpty()) {
@@ -46,6 +48,7 @@ public class PasswordGenerationController {
     }
 
     @GetMapping("/difficulty/{difficulty}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getPasswordsByDifficulty(@PathVariable Difficulty difficulty) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.getPasswordsByDifficulty(difficulty);
         if (generatedPasswords.isEmpty()) {
@@ -55,6 +58,7 @@ public class PasswordGenerationController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getAllGeneratedPasswords() {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswords();
         if (generatedPasswords.isEmpty()) {
@@ -71,6 +75,7 @@ public class PasswordGenerationController {
     }
 
     @GetMapping("/user/{username}/passwords")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<GeneratedPassword>> getAllGeneratedPasswordsForUser(@PathVariable String username) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswordsForUser(username);
         if (generatedPasswords.isEmpty()) {
@@ -80,6 +85,7 @@ public class PasswordGenerationController {
     }
 
     @PostMapping("/generateBulkPasswords")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> generateBulkPasswords(@RequestBody BulkPasswordGenerationDto bulkPasswordGenerationDto) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
 
@@ -91,6 +97,7 @@ public class PasswordGenerationController {
     }
 
     @DeleteMapping("/deleteAllBulkPasswords")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deleteBulkPasswords(){
         passwordGenerationService.deleteAllGeneratedPasswords();
         return new ResponseEntity<>(HttpStatus.OK);

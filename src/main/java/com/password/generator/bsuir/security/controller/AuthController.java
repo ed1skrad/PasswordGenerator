@@ -1,15 +1,15 @@
 package com.password.generator.bsuir.security.controller;
 
+import com.password.generator.bsuir.security.config.JwtAuthenticationFilter;
 import com.password.generator.bsuir.security.domain.dto.JwtAuthenticationResponse;
 import com.password.generator.bsuir.security.domain.dto.SignInRequest;
 import com.password.generator.bsuir.security.domain.dto.SignUpRequest;
 import com.password.generator.bsuir.security.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -30,6 +30,12 @@ public class AuthController {
     @PostMapping("/signin")
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
         return authenticationService.signIn(request);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        authenticationService.logout(request);
+        return ResponseEntity.ok().build();
     }
 }
 
