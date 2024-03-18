@@ -1,10 +1,15 @@
 package com.password.generator.bsuir.security.domain.dto;
 
+import com.password.generator.bsuir.security.domain.model.Role;
+import com.password.generator.bsuir.security.domain.model.RoleEnum;
+
 public class JwtAuthenticationResponse {
 
     private String token;
 
     private String username;
+
+    private RoleEnum role;
 
     public JwtAuthenticationResponse() {
     }
@@ -26,5 +31,13 @@ public class JwtAuthenticationResponse {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public RoleEnum getRole() {
+        return role;
+    }
+
+    public void setRole(RoleEnum role) {
+        this.role = role;
     }
 }
