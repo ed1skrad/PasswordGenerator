@@ -131,16 +131,17 @@ class PasswordGenerationServiceTest {
             generatedPassword.setId((long) i);
             generatedPasswords.add(generatedPassword);
         }
-        when(passwordRepository.findTopNOrderByIdDesc()).thenReturn(generatedPasswords);
+        when(passwordRepository.findAll()).thenReturn(generatedPasswords);
         doNothing().when(passwordRepository).deleteById(anyLong());
         doNothing().when(passwordCache).remove(anyLong());
 
         passwordGenerationService.deleteAllGeneratedPasswords();
 
-        verify(passwordRepository, times(1)).findTopNOrderByIdDesc();
+        verify(passwordRepository, times(1)).findAll();
         verify(passwordRepository, times(n)).deleteById(anyLong());
         verify(passwordCache, times(n)).remove(anyLong());
     }
+
 
     @Test
     void testGetPasswordsByDifficulty_NoPasswordsFound() {
@@ -236,4 +237,41 @@ class PasswordGenerationServiceTest {
         assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", passwordGenerationService.getCharacterPool(Difficulty.NORMAL));
         assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+", passwordGenerationService.getCharacterPool(Difficulty.HARD));
     }
+
+    @Test
+    void testGetPasswordByIdPasswordNotFound() {
+        Long id = 1L;
+        when(passwordCache.contains(id)).thenReturn(false);
+        when(passwordRepository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<GeneratedPassword> result = passwordGenerationService.getPasswordById(id);
+
+        assertEquals(Optional.empty(), result);
+        verify(passwordRepository, times(1)).findById(anyLong());
+        verify(passwordCache, times(1)).contains(anyLong());
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    void testGetAllGeneratedPasswords() {
+        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
+        generatedPasswords.add(new GeneratedPassword());
+        when(passwordRepository.findAll()).thenReturn(generatedPasswords);
+
+        List<GeneratedPassword> result = passwordGenerationService.getAllGeneratedPasswords();
+
+        assertEquals(generatedPasswords, result);
+        verify(passwordRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testDeleteGeneratedPasswordByIdPasswordNotFound() {
+        Long id = 1L;
+        doNothing().when(passwordRepository).deleteById(id);
+
+        passwordGenerationService.deleteGeneratedPasswordById(id);
+
+        verify(passwordRepository, times(1)).deleteById(id);
+    }
+
 }

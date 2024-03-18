@@ -1,6 +1,5 @@
 package com.password.generator.bsuir.security.controller;
 
-import com.password.generator.bsuir.security.config.JwtAuthenticationFilter;
 import com.password.generator.bsuir.security.domain.dto.JwtAuthenticationResponse;
 import com.password.generator.bsuir.security.domain.dto.SignInRequest;
 import com.password.generator.bsuir.security.domain.dto.SignUpRequest;
@@ -39,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
+    public ResponseEntity<Void> logout(@Valid HttpServletRequest request) {
         authenticationService.logout(request);
         return ResponseEntity.ok().build();
     }
