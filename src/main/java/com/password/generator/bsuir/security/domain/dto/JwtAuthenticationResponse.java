@@ -1,6 +1,5 @@
 package com.password.generator.bsuir.security.domain.dto;
 
-import com.password.generator.bsuir.security.domain.model.Role;
 import com.password.generator.bsuir.security.domain.model.RoleEnum;
 
 public class JwtAuthenticationResponse {

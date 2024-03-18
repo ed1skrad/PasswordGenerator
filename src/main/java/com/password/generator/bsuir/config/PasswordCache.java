@@ -36,6 +36,6 @@ public class PasswordCache {
     public List<GeneratedPassword> getAllCachedPasswords() {
         return cache.entrySet().stream()
                 .map(entry -> new GeneratedPassword(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

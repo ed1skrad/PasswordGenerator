@@ -13,8 +13,6 @@ import com.password.generator.bsuir.security.exception.UsernameTakenException;
 import com.password.generator.bsuir.security.repository.RoleRepository;
 import com.password.generator.bsuir.security.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,8 +35,6 @@ public class AuthenticationService {
 
     private final InvalidTokenRepository invalidTokenRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
     @Autowired
     public AuthenticationService(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
                                  UserRepository userRepository, RoleRepository roleRepository, InvalidTokenRepository invalidTokenRepository) {
@@ -53,7 +49,6 @@ public class AuthenticationService {
 
     @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        logger.info("Attempting to sign up user: {}", request.getUsername());
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new UsernameTakenException("Error: username is taken!");
         }
@@ -75,14 +70,11 @@ public class AuthenticationService {
 
         user.setRole(roles);
         userRepository.save(user);
-        logger.info("Successfull sign up user: {}", request.getUsername());
         String jwt = jwtService.generateToken(user);
-        logger.info("Generated JWT for user: {}", request.getUsername());
         return new JwtAuthenticationResponse(jwt);
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        logger.info("Attempting to sign in user: {}", request.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
                 request.getPassword()
@@ -93,7 +85,6 @@ public class AuthenticationService {
                 .loadUserByUsername(request.getUsername());
 
         var jwt = jwtService.generateToken(user);
-        logger.info("Succesfull sign in for user: {}", request.getUsername());
         return new JwtAuthenticationResponse(jwt);
     }
 

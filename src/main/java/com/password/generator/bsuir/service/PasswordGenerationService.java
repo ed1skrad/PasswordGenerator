@@ -156,7 +156,7 @@ public class PasswordGenerationService {
                     return new GeneratedPassword(generatedPassword, bulkPasswordGenerationDto.getDifficulty(), currentUser);
                 })
                 .limit(bulkPasswordGenerationDto.getCount())
-                .collect(Collectors.toList());
+                .toList();
 
         passwordRepository.saveAll(generatedPasswords);
         logger.info("Bulk passwords saved successfully.");
@@ -164,13 +164,14 @@ public class PasswordGenerationService {
         return generatedPasswords;
     }
 
+
     public void deleteAllGeneratedPasswords() {
         List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
         generatedPasswords
                 .forEach(password -> {
                     passwordRepository.deleteById(password.getId());
                     passwordCache.remove(password.getId());
-                    System.out.println("Removed from cache");
+                    logger.info("Bulk passwords deleted successfully.");
                 });
         passwordCache.clear();
     }
