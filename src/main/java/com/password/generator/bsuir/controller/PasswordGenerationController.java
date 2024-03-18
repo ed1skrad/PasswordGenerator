@@ -90,7 +90,7 @@ public class PasswordGenerationController {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
 
         if (generatedPasswords.isEmpty()) {
-            return new ResponseEntity<>("No passwords generated", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>("No passwords generated", HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
@@ -100,6 +100,6 @@ public class PasswordGenerationController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deleteBulkPasswords(){
         passwordGenerationService.deleteAllGeneratedPasswords();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 }

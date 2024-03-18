@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -149,19 +148,6 @@ public class PasswordGenerationService {
         return passwordRepository.findAllByUserUsername(username);
     }
 
-    public List<String> generatePasswords(List<PasswordGenerationDto> dtos, int count) {
-        logger.info("Generating passwords...");
-
-        List<String> generatedPasswords = dtos.stream()
-                .flatMap(dto -> Stream.generate(() -> generatePasswordString(dto))
-                        .limit(count))
-                .toList();
-
-        logger.info("Passwords generated successfully.");
-
-        return generatedPasswords;
-    }
-
     public List<GeneratedPassword> generateBulkPasswords(BulkPasswordGenerationDto bulkPasswordGenerationDto) {
         List<GeneratedPassword> generatedPasswords = Stream.generate(() -> {
                     PasswordGenerationDto passwordGenerationDto = new PasswordGenerationDto(bulkPasswordGenerationDto.getDifficulty(), bulkPasswordGenerationDto.getLength());
@@ -170,7 +156,7 @@ public class PasswordGenerationService {
                     return new GeneratedPassword(generatedPassword, bulkPasswordGenerationDto.getDifficulty(), currentUser);
                 })
                 .limit(bulkPasswordGenerationDto.getCount())
-                .collect(Collectors.toList());
+                .toList();
 
         passwordRepository.saveAll(generatedPasswords);
         logger.info("Bulk passwords saved successfully.");
@@ -178,13 +164,14 @@ public class PasswordGenerationService {
         return generatedPasswords;
     }
 
+
     public void deleteAllGeneratedPasswords() {
         List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
         generatedPasswords
                 .forEach(password -> {
                     passwordRepository.deleteById(password.getId());
                     passwordCache.remove(password.getId());
-                    System.out.println("Removed from cache");
+                    logger.info("Bulk passwords deleted successfully.");
                 });
         passwordCache.clear();
     }
