@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -25,7 +24,7 @@ public class AuthController {
     public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
         JwtAuthenticationResponse response = authenticationService.signUp(request);
         response.setUsername(request.getUsername());
-        response.setRole(authenticationService.findUserRoleByUsername(request.getUsername()));
+        response.setRole(authenticationService.findUserRolesByUsername(request.getUsername()));
         return response;
     }
 
@@ -33,7 +32,7 @@ public class AuthController {
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
         JwtAuthenticationResponse response = authenticationService.signIn(request);
         response.setUsername(request.getUsername());
-        response.setRole(authenticationService.findUserRoleByUsername(request.getUsername()));
+        response.setRole(authenticationService.findUserRolesByUsername(request.getUsername()));
         return response;
     }
 

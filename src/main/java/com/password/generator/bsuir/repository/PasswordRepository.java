@@ -18,5 +18,4 @@ public interface PasswordRepository extends JpaRepository<GeneratedPassword, Lon
 
     @Query("SELECT gp FROM GeneratedPassword gp ORDER BY gp.id DESC")
     List<GeneratedPassword> findTopNOrderByIdDesc();
-
 }

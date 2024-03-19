@@ -123,14 +123,17 @@ public class AuthenticationService {
         SecurityContextHolder.clearContext();
     }
 
-    public RoleEnum findUserRoleByUsername(String username) {
+    public List<RoleEnum> findUserRolesByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
 
-        Role userRole = user.getRole().stream()
-                .findFirst()
-                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
+        List<Role> userRoles = user.getRole();
+        if (userRoles == null || userRoles.isEmpty()) {
+            throw new RoleNotFoundException("Error. Role not found.");
+        }
 
-        return userRole.getName();
+        return userRoles.stream()
+                .map(Role::getName)
+                .toList();
     }
 }
