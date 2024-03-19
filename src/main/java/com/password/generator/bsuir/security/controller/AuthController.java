@@ -3,6 +3,7 @@ package com.password.generator.bsuir.security.controller;
 import com.password.generator.bsuir.security.domain.dto.JwtAuthenticationResponse;
 import com.password.generator.bsuir.security.domain.dto.SignInRequest;
 import com.password.generator.bsuir.security.domain.dto.SignUpRequest;
+import com.password.generator.bsuir.security.exception.ForbiddenException;
 import com.password.generator.bsuir.security.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,16 +31,23 @@ public class AuthController {
 
     @PostMapping("/signin")
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
-        JwtAuthenticationResponse response = authenticationService.signIn(request);
-        response.setUsername(request.getUsername());
-        response.setRole(authenticationService.findUserRolesByUsername(request.getUsername()));
-        return response;
+        try {
+            JwtAuthenticationResponse response = authenticationService.signIn(request);
+            response.setUsername(request.getUsername());
+            response.setRole(authenticationService.findUserRolesByUsername(request.getUsername()));
+            return response;
+        } catch (Exception e) {
+            throw new ForbiddenException("Invalid username or password");
+        }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Valid HttpServletRequest request) {
-        authenticationService.logout(request);
-        return ResponseEntity.ok().build();
+        try {
+            authenticationService.logout(request);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new ForbiddenException("You do not have permission to access this resource");
+        }
     }
 }
-

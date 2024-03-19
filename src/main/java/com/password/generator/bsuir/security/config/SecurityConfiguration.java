@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                     var corsConfiguration = new CorsConfiguration();
                     corsConfiguration.setAllowedOriginPatterns(List.of("*"));
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowedHeaders(List.of("https://passwordgeneratorfrontend.onrender.com/"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))

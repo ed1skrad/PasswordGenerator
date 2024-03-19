@@ -74,6 +74,7 @@ public class PasswordGenerationService {
 
         passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty, currentUser));
         requestCounterService.increment();
+        logger.info("Incrementation.");
         return generatedPassword;
     }
 
