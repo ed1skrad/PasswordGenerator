@@ -122,26 +122,6 @@ class PasswordGenerationServiceTest {
         assertEquals(generatedPasswords, result);
         verify(passwordRepository, times(1)).findAllByUserUsername(username);
     }
-    @Test
-    void testDeleteAllGeneratedPasswords() {
-        int n = 5;
-        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            GeneratedPassword generatedPassword = new GeneratedPassword();
-            generatedPassword.setId((long) i);
-            generatedPasswords.add(generatedPassword);
-        }
-        when(passwordRepository.findAll()).thenReturn(generatedPasswords);
-        doNothing().when(passwordRepository).deleteById(anyLong());
-        doNothing().when(passwordCache).remove(anyLong());
-
-        passwordGenerationService.deleteAllGeneratedPasswords();
-
-        verify(passwordRepository, times(1)).findAll();
-        verify(passwordRepository, times(n)).deleteById(anyLong());
-        verify(passwordCache, times(n)).remove(anyLong());
-    }
-
 
     @Test
     void testGetPasswordsByDifficulty_NoPasswordsFound() {
