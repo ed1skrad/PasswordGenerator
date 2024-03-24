@@ -76,10 +76,10 @@ public class PasswordGenerationController {
 
     @GetMapping("/user/{username}/passwords")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<GeneratedPassword>> getAllGeneratedPasswordsForUser(@PathVariable String username) {
+    public ResponseEntity<Object> getAllGeneratedPasswordsForUser(@PathVariable String username) {
         List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswordsForUser(username);
         if (generatedPasswords.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Passwords for user " + username + " not found");
         }
         return ResponseEntity.ok(generatedPasswords);
     }
@@ -101,5 +101,10 @@ public class PasswordGenerationController {
     public ResponseEntity<Object> deleteBulkPasswords(){
         passwordGenerationService.deleteAllGeneratedPasswords();
         return new ResponseEntity<Object>(HttpStatus.OK);
+    }
+    @PostMapping("/generatePasswords/{count}")
+    public ResponseEntity<List<String>> generatePasswords(@RequestBody List<PasswordGenerationDto> dtos, @PathVariable int count) {
+        List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
+        return ResponseEntity.ok(generatedPasswords);
     }
 }

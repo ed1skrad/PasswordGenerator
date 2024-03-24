@@ -6,7 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @ControllerAdvice
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,10 +18,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = {com.password.generator.bsuir.security.exception.ForbiddenException.class})
-    public ResponseEntity<Object> handleForbiddenException(HttpServletRequest request, com.password.generator.bsuir.security.exception.ForbiddenException exception) {
-        String errorMessage = "You do not have permission to access this resource or your input incorrect!";
-        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<String> handleForbiddenException(ForbiddenException e) {
+        logger.error("ForbiddenException occurred: " + e.getMessage(), e);
+        return new ResponseEntity<>("Forbidden: Access is denied.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(value = {RuntimeException.class})

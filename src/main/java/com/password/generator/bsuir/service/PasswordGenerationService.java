@@ -166,13 +166,26 @@ public class PasswordGenerationService {
 
 
     public void deleteAllGeneratedPasswords() {
-        List<GeneratedPassword> generatedPasswords = passwordRepository.findAll();
-        generatedPasswords
-                .forEach(password -> {
-                    passwordRepository.deleteById(password.getId());
-                    passwordCache.remove(password.getId());
-                    logger.info("Bulk passwords deleted successfully.");
-                });
+        List<Long> passwordIds = passwordRepository.findAll().stream()
+                .map(GeneratedPassword::getId)
+                .toList();
+
+        passwordRepository.deleteAllByIdInBatch(passwordIds);
         passwordCache.clear();
+        logger.info("Bulk passwords deleted successfully.");
     }
+
+    public List<String> generatePasswords(List<PasswordGenerationDto> dtos, int count) {
+        logger.info("Generating passwords...");
+
+        List<String> generatedPasswords = dtos.stream()
+                .flatMap(dto -> Stream.generate(() -> generatePasswordString(dto))
+                        .limit(count))
+                .toList();
+
+        logger.info("Passwords generated successfully.");
+
+        return generatedPasswords;
+    }
+
 }
