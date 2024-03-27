@@ -9,7 +9,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class InvalidTokenRepository {
-
     private final Set<String> invalidTokens = Collections.synchronizedSet(new HashSet<>());
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -21,7 +20,6 @@ public class InvalidTokenRepository {
             lock.unlock();
         }
     }
-
     public boolean isTokenInvalid(String token) {
         if (token == null || token.isEmpty()) {
             return false;

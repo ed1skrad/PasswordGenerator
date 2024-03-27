@@ -23,10 +23,14 @@ public class AuthController {
 
     @PostMapping("/signup")
     public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
-        JwtAuthenticationResponse response = authenticationService.signUp(request);
-        response.setUsername(request.getUsername());
-        response.setRole(authenticationService.findUserRolesByUsername(request.getUsername()));
-        return response;
+        try {
+            JwtAuthenticationResponse response = authenticationService.signUp(request);
+            response.setUsername(request.getUsername());
+            response.setRole(authenticationService.findUserRolesByUsername(request.getUsername()));
+            return response;
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException("Some error occurred while auth processing: " + e.getMessage());
+        }
     }
 
     @PostMapping("/signin")

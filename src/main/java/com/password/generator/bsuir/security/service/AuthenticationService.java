@@ -36,8 +36,10 @@ public class AuthenticationService {
     private final InvalidTokenRepository invalidTokenRepository;
 
     @Autowired
-    public AuthenticationService(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
-                                 UserRepository userRepository, RoleRepository roleRepository, InvalidTokenRepository invalidTokenRepository) {
+    public AuthenticationService(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder,
+                                 AuthenticationManager authenticationManager,
+                                 UserRepository userRepository, RoleRepository roleRepository,
+                                 InvalidTokenRepository invalidTokenRepository) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;

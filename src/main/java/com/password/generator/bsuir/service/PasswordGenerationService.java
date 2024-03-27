@@ -187,5 +187,4 @@ public class PasswordGenerationService {
 
         return generatedPasswords;
     }
-
 }
