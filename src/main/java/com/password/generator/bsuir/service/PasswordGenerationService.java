@@ -8,8 +8,6 @@ import com.password.generator.bsuir.model.GeneratedPassword;
 import com.password.generator.bsuir.repository.PasswordRepository;
 import com.password.generator.bsuir.security.domain.model.User;
 import com.password.generator.bsuir.security.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,8 +21,6 @@ import java.util.stream.Stream;
 
 @Service
 public class PasswordGenerationService {
-
-    private static final Logger logger = LoggerFactory.getLogger(PasswordGenerationService.class);
 
     private static final String LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
     private static final String UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -46,11 +42,7 @@ public class PasswordGenerationService {
     }
 
     public String generatePassword(PasswordGenerationDto dto) {
-        logger.info("Generating password...");
-        String generatedPassword = generatePasswordString(dto);
-        logger.info("Password generated successfully.");
-
-        return generatedPassword;
+        return generatePasswordString(dto);
     }
 
     User getCurrentUser() {
@@ -74,10 +66,8 @@ public class PasswordGenerationService {
 
         passwordRepository.save(new GeneratedPassword(generatedPassword, difficulty, currentUser));
         requestCounterService.increment();
-        logger.info("Incrementation.");
         return generatedPassword;
     }
-
 
     String getCharacterPool(Difficulty difficulty) {
         return switch (difficulty) {
@@ -88,9 +78,7 @@ public class PasswordGenerationService {
     }
 
     public Optional<GeneratedPassword> getPasswordById(Long id) {
-
         if (passwordCache.contains(id)) {
-            logger.info("Retrieved password for id '{}' from cache.", id);
             String cachedPassword = passwordCache.get(id);
             GeneratedPassword cachedGeneratedPassword = new GeneratedPassword(id, cachedPassword);
             Optional<GeneratedPassword> optionalGeneratedPassword = passwordRepository.findById(id);
@@ -101,7 +89,6 @@ public class PasswordGenerationService {
             }
             return Optional.of(cachedGeneratedPassword);
         } else {
-            logger.info("Retrieving password for id '{}' from database.", id);
             Optional<GeneratedPassword> generatedPassword = passwordRepository.findById(id);
             generatedPassword.ifPresent(password -> passwordCache.put(id, String.valueOf(password)));
             return generatedPassword;
@@ -115,7 +102,6 @@ public class PasswordGenerationService {
             generatedPasswords.forEach(password -> {
                 if (!passwordCache.contains(password.getId())) {
                     passwordCache.put(password.getId(), password.getPassword());
-                    logger.info("Added password for id '{}' with difficulty '{}' to cache.", password.getId(), difficulty);
                 }
             });
         }
@@ -130,7 +116,6 @@ public class PasswordGenerationService {
             generatedPasswords.forEach(password -> {
                 if (!passwordCache.contains(password.getId())) {
                     passwordCache.put(password.getId(), password.getPassword());
-                    logger.info("Added password for id '{}' to cache.", password.getId());
                 }
             });
         }
@@ -140,9 +125,7 @@ public class PasswordGenerationService {
 
     public void deleteGeneratedPasswordById(Long generatedPasswordId) {
         passwordRepository.deleteById(generatedPasswordId);
-        logger.info("Deleted password for id '{}' from database.", generatedPasswordId);
     }
-
 
     public List<GeneratedPassword> getAllGeneratedPasswordsForUser(String username) {
         return passwordRepository.findAllByUserUsername(username);
@@ -159,11 +142,9 @@ public class PasswordGenerationService {
                 .toList();
 
         passwordRepository.saveAll(generatedPasswords);
-        logger.info("Bulk passwords saved successfully.");
 
         return generatedPasswords;
     }
-
 
     public void deleteAllGeneratedPasswords() {
         List<Long> passwordIds = passwordRepository.findAll().stream()
@@ -172,18 +153,13 @@ public class PasswordGenerationService {
 
         passwordRepository.deleteAllByIdInBatch(passwordIds);
         passwordCache.clear();
-        logger.info("Bulk passwords deleted successfully.");
     }
 
     public List<String> generatePasswords(List<PasswordGenerationDto> dtos, int count) {
-        logger.info("Generating passwords...");
-
         List<String> generatedPasswords = dtos.stream()
                 .flatMap(dto -> Stream.generate(() -> generatePasswordString(dto))
                         .limit(count))
                 .toList();
-
-        logger.info("Passwords generated successfully.");
 
         return generatedPasswords;
     }

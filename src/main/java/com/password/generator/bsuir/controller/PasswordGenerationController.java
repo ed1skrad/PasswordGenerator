@@ -20,6 +20,8 @@ import java.util.Optional;
 @RequestMapping("/api/password")
 public class PasswordGenerationController {
 
+    private final String errorMessage = "Something went wrong";
+
     private final PasswordGenerationService passwordGenerationService;
 
     @Autowired
@@ -40,7 +42,7 @@ public class PasswordGenerationController {
             }
             return ResponseEntity.ok(generatedPassword);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage + e.getMessage());
         }
     }
 
@@ -54,7 +56,7 @@ public class PasswordGenerationController {
             }
             return ResponseEntity.ok(generatedPassword);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage + e.getMessage());
         }
     }
 
@@ -68,7 +70,7 @@ public class PasswordGenerationController {
             }
             return ResponseEntity.ok(generatedPasswords);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage + e.getMessage());
         }
     }
 
@@ -82,7 +84,7 @@ public class PasswordGenerationController {
             }
             return ResponseEntity.ok(generatedPasswords);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage + e.getMessage());
         }
     }
 
@@ -93,7 +95,7 @@ public class PasswordGenerationController {
             passwordGenerationService.deleteGeneratedPasswordById(passwordId);
             return ResponseEntity.ok("Generated password deleted successfully");
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage + e.getMessage());
         }
     }
 
@@ -107,7 +109,7 @@ public class PasswordGenerationController {
             }
             return ResponseEntity.ok(generatedPasswords);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage + e.getMessage());
         }
     }
 
@@ -121,7 +123,7 @@ public class PasswordGenerationController {
             }
             return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage + e.getMessage());
         }
     }
 
@@ -132,7 +134,7 @@ public class PasswordGenerationController {
             passwordGenerationService.deleteAllGeneratedPasswords();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage + e.getMessage());
         }
     }
 
@@ -142,7 +144,7 @@ public class PasswordGenerationController {
             List<String> generatedPasswords = passwordGenerationService.generatePasswords(dtos, count);
             return ResponseEntity.ok(generatedPasswords);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonList("Something went wrong: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonList(errorMessage + e.getMessage()));
         }
     }
 }
