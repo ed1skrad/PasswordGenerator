@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequestMapping("/api/password")
 public class PasswordGenerationController {
 
-    private final String errorMessage = "Something went wrong";
+    private static final String errorMessage = "Something went wrong";
 
     private final PasswordGenerationService passwordGenerationService;
 

@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class PasswordGenerationServiceAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(PasswordGenerationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(PasswordGenerationServiceAspect.class);
 
     @Around("execution(* com.password.generator.bsuir.service.PasswordGenerationService.generatePassword(..))")
     public Object logGeneratePassword(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -41,7 +41,7 @@ public class PasswordGenerationServiceAspect {
         Difficulty difficulty = (Difficulty) joinPoint.getArgs()[0];
         logger.info("Retrieving passwords for difficulty '{}'...", difficulty);
         Object result = joinPoint.proceed();
-        logger.info("Passwords retrieved successfully.");
+        logger.info("Passwords by difficulty retrieved successfully.");
         return result;
     }
 
@@ -49,7 +49,7 @@ public class PasswordGenerationServiceAspect {
     public Object logGetAllGeneratedPasswords(ProceedingJoinPoint joinPoint) throws Throwable {
         logger.info("Retrieving all generated passwords...");
         Object result = joinPoint.proceed();
-        logger.info("Passwords retrieved successfully.");
+        logger.info("All passwords retrieved successfully.");
         return result;
     }
 

@@ -156,11 +156,9 @@ public class PasswordGenerationService {
     }
 
     public List<String> generatePasswords(List<PasswordGenerationDto> dtos, int count) {
-        List<String> generatedPasswords = dtos.stream()
+        return dtos.stream()
                 .flatMap(dto -> Stream.generate(() -> generatePasswordString(dto))
                         .limit(count))
                 .toList();
-
-        return generatedPasswords;
     }
 }

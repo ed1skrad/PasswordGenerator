@@ -232,5 +232,4 @@ class PasswordGenerationServiceTest {
 
         verify(passwordRepository, times(1)).deleteById(id);
     }
-
 }
