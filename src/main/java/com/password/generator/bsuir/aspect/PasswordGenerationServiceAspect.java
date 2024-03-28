@@ -3,7 +3,6 @@ package com.password.generator.bsuir.aspect;
 import com.password.generator.bsuir.dto.BulkPasswordGenerationDto;
 import com.password.generator.bsuir.dto.PasswordGenerationDto;
 import com.password.generator.bsuir.model.difficultyenum.Difficulty;
-import com.password.generator.bsuir.service.PasswordGenerationService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
