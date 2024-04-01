@@ -1,6 +1,7 @@
 package com.password.generator.bsuir.security.config;
 
 import com.password.generator.bsuir.security.service.UserService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,17 +19,25 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
-
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Security configuration for the application.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService userService;
 
+    /**
+     * Constructs a new SecurityConfiguration.
+     *
+     * @param jwtAuthenticationFilter the JWT authentication filter
+     * @param userService the user service
+     */
     @Autowired
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
                                  UserService userService) {
@@ -36,6 +45,13 @@ public class SecurityConfiguration {
         this.userService = userService;
     }
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http the HTTP security builder
+     * @return the security filter chain
+     * @throws Exception if an exception occurs
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -60,11 +76,21 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * Creates a password encoder bean.
+     *
+     * @return the password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Creates an authentication provider bean.
+     *
+     * @return the authentication provider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -73,6 +99,13 @@ public class SecurityConfiguration {
         return authProvider;
     }
 
+    /**
+     * Creates an authentication manager bean.
+     *
+     * @param config the authentication configuration
+     * @return the authentication manager
+     * @throws Exception if an exception occurs
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
