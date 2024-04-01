@@ -6,12 +6,16 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for managing users.
  */
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -29,7 +33,7 @@ public class UserController {
      * @param userIdToDelete the ID of the user to delete
      * @return a response entity with a success message
      */
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/delete/{userIdToDelete}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable Long userIdToDelete) {
         authenticationService.deleteUserById(userIdToDelete);
@@ -43,7 +47,7 @@ public class UserController {
      * @param updatedUser    the updated user data
      * @return a response entity with a success message
      */
-    @PutMapping("/update/{userId}")
+    @PutMapping("/update/{userIdToUpdate}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateUser(@PathVariable Long userIdToUpdate,
                                              @Valid @RequestBody User updatedUser) {

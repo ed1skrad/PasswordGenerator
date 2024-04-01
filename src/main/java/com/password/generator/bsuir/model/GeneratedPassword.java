@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 /**
  * Entity representing a generated password.
  */
+
 @Entity
 @Table(name = "generated_password")
 public class GeneratedPassword {
