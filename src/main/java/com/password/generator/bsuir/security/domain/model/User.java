@@ -60,7 +60,7 @@ public class User implements UserDetails {
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<GeneratedPassword> generatedPasswords = new HashSet<>();
+    private transient Set<GeneratedPassword> generatedPasswords = new HashSet<>();
 
     /**
      * Returns the authorities granted to the user.

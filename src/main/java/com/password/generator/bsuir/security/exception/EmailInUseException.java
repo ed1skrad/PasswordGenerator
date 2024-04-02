@@ -1,7 +1,5 @@
 package com.password.generator.bsuir.security.exception;
 
-import java.lang.RuntimeException;
-
 /**
  * Custom exception class to handle cases where an email is already in use.
  * This exception is thrown when

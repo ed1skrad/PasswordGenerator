@@ -1,7 +1,5 @@
 package com.password.generator.bsuir.security.exception;
 
-import java.lang.RuntimeException;
-
 /**
  * Custom exception class to handle bad credentials.
  * This exception is thrown when the provided credentials are invalid.
