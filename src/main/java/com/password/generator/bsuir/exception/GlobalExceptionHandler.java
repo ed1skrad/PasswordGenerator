@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {BadCredentialsException.class})
     public ResponseEntity<Object> handleBadCredentialsException(HttpServletRequest request,
                                                                 BadCredentialsException exception) {
-        logger.error("BadCredentials occurred: " + exception.getMessage());
+        logger.error("BadCredentials occurred!");
         String errorMessage = "Invalid username or password";
         return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
     }
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {EmailInUseException.class})
     public ResponseEntity<Object> handleEmailInUseException(HttpServletRequest request,
                                                             EmailInUseException exception) {
-        logger.error("EmailInUseException occurred: " + exception.getMessage());
+        logger.error("EmailInUseException occurred!");
         String errorMessage = "Email is already in use";
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {ForbiddenException.class})
     public ResponseEntity<Object> handleForbiddenException(HttpServletRequest request,
                                                            ForbiddenException exception) {
-        logger.error("ForbiddenException occurred: " + exception.getMessage());
+        logger.error("ForbiddenException occurred!");
         String errorMessage = "Access is denied";
         return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN);
     }
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {RoleNotFoundException.class})
     public ResponseEntity<Object> handleRoleNotFoundException(HttpServletRequest request,
                                                               RoleNotFoundException exception) {
-        logger.error("RoleNotFoundException occurred: " + exception.getMessage());
+        logger.error("RoleNotFoundException occurred!");
         String errorMessage = "Role not found";
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
@@ -91,14 +91,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {UsernameTakenException.class})
     public ResponseEntity<Object> handleUsernameTakenException(HttpServletRequest request,
                                                                UsernameTakenException exception) {
-        logger.error("UsernameTakenException occurred: " + exception.getMessage());
+        logger.error("UsernameTakenException occurred!");
         String errorMessage = "Username is already taken";
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {AccessDeniedException.class})
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-        logger.error("Access denied: {}", ex.getMessage());
+        logger.error("Access denied!");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access is denied.");
     }
 
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {RuntimeException.class})
     public ResponseEntity<Object> handleRuntimeException(HttpServletRequest request,
                                                          RuntimeException exception) {
-        logger.error("RuntimeException occurred: " + exception.getMessage());
+        logger.error("RuntimeException occurred!");
         String errorMessage = "An unexpected error occurred";
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
