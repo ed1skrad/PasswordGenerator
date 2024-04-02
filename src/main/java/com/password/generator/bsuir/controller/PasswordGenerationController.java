@@ -53,8 +53,7 @@ public class PasswordGenerationController {
     public ResponseEntity<String> generatePassword(@RequestBody PasswordGenerationDto dto) {
         try {
             if (dto.getLength() > 255) {
-                throw new PasswordGenerationException
-                        ("Password length should not more than 255 characters");
+                throw new PasswordGenerationException("Password length should not more than 255 characters");
             }
             String generatedPassword = passwordGenerationService.generatePassword(dto);
             if (generatedPassword.isEmpty()) {
@@ -62,10 +61,12 @@ public class PasswordGenerationController {
             }
             return ResponseEntity.ok(generatedPassword);
         } catch (PasswordGenerationException e) {
-            return ResponseEntity.status
-                    (HttpStatus.BAD_REQUEST).body(ERROR_MESSAGE + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ERROR_MESSAGE + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ERROR_MESSAGE + "Access is denied.");
         }
     }
+
 
     /**
      * Retrieves a generated password by its ID.
