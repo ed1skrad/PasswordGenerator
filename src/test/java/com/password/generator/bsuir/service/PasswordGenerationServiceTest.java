@@ -232,4 +232,105 @@ class PasswordGenerationServiceTest {
 
         verify(passwordRepository, times(1)).deleteById(id);
     }
+
+    @Test
+    void testGeneratePasswords() {
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        List<PasswordGenerationDto> dtos = List.of(
+                new PasswordGenerationDto(Difficulty.EASY, 5),
+                new PasswordGenerationDto(Difficulty.EASY, 3),
+                new PasswordGenerationDto(Difficulty.EASY, 2)
+        );
+        int count = 3;
+        List<String> passwords = passwordGenerationService.generatePasswords(dtos, count);
+
+        assertEquals(9, passwords.size());
+        assertTrue(passwords.stream()
+                .allMatch(password -> password.length() == 5 || password.length() == 3 || password.length() == 2));
+        assertTrue(passwords.stream()
+                .allMatch(password -> password.matches("^[a-z]*$") || password.matches("^[0-9]*$") || password.matches("^[!@#]*$")));
+    }
+    @Test
+    void testGeneratePasswordEasy() {
+        PasswordGenerationDto dto = new PasswordGenerationDto(Difficulty.EASY, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        String generatedPassword = passwordGenerationService.generatePassword(dto);
+
+        assertNotNull(generatedPassword);
+        assertEquals(10, generatedPassword.length());
+        verify(passwordRepository, times(1)).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    void testGenerateBulkPasswordsDifferentDifficulty() {
+        BulkPasswordGenerationDto bulkPasswordGenerationDto = new BulkPasswordGenerationDto(2, Difficulty.HARD, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
+
+        assertNotNull(generatedPasswords);
+        assertEquals(2, generatedPasswords.size());
+        verify(passwordRepository, times(2)).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    void testDeleteGeneratedPasswordByIdPasswordNotExists() {
+        Long id = 1L;
+        doThrow(new RuntimeException()).when(passwordRepository).deleteById(id);
+
+        assertThrows(RuntimeException.class, () -> passwordGenerationService.deleteGeneratedPasswordById(id));
+
+        verify(passwordRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void testGenerateBulkPasswordsWithZeroCount() {
+        BulkPasswordGenerationDto bulkPasswordGenerationDto = new BulkPasswordGenerationDto(0, Difficulty.NORMAL, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        when(passwordRepository.save(any(GeneratedPassword.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
+
+        assertTrue(generatedPasswords.isEmpty());
+        verify(passwordRepository, never()).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
+    @Test
+    void testGeneratePasswordString_NullDifficulty() {
+        PasswordGenerationDto dto = new PasswordGenerationDto(null, 10);
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+
+        assertThrows(NullPointerException.class, () -> passwordGenerationService.generatePasswordString(dto));
+
+        verify(passwordRepository, never()).save(any(GeneratedPassword.class));
+        verify(passwordCache, never()).put(anyLong(), anyString());
+    }
+
 }
