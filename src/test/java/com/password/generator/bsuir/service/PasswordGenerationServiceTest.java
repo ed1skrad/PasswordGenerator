@@ -333,4 +333,21 @@ class PasswordGenerationServiceTest {
         verify(passwordCache, never()).put(anyLong(), anyString());
     }
 
+    @Test
+    void testDeleteAllGeneratedPasswords() {
+        // given
+        List<GeneratedPassword> generatedPasswords = new ArrayList<>();
+        generatedPasswords.add(new GeneratedPassword());
+        generatedPasswords.add(new GeneratedPassword());
+        when(passwordRepository.findAll()).thenReturn(generatedPasswords);
+
+        // when
+        passwordGenerationService.deleteAllGeneratedPasswords();
+
+        // then
+        verify(passwordRepository, times(1)).findAll();
+        verify(passwordRepository, times(1)).deleteAllByIdInBatch(anyList());
+        verify(passwordCache, times(1)).clear();
+    }
+
 }

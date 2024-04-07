@@ -7,7 +7,6 @@ import com.password.generator.bsuir.security.exception.ForbiddenException;
 import com.password.generator.bsuir.security.exception.RoleNotFoundException;
 import com.password.generator.bsuir.security.exception.UsernameTakenException;
 import jakarta.servlet.http.HttpServletRequest;
-import java.nio.file.AccessDeniedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -115,20 +114,6 @@ public class GlobalExceptionHandler {
                 new ErrorResponse("Username is already taken", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-    /**
-     * Handles AccessDeniedException.
-     *
-     * @param ex the AccessDeniedException
-     * @return a ResponseEntity with an ErrorResponse
-     * object that contains the error message and HTTP status code FORBIDDEN
-     */
-
-    @ExceptionHandler(value = {AccessDeniedException.class})
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
-        logger.error("Access denied!");
-        ErrorResponse errorResponse = new ErrorResponse("Access is denied", HttpStatus.FORBIDDEN);
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
-    }
 
     /**
      * Handles RuntimeException.
@@ -141,7 +126,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {RuntimeException.class})
     public ResponseEntity<ErrorResponse> handleRuntimeException(HttpServletRequest request,
                                                                 RuntimeException exception) {
-        logger.error("RuntimeException occurred!");
+        logger.error("RuntimeException occurred! Message: {}", exception.getMessage());
         ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred",
                 HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);

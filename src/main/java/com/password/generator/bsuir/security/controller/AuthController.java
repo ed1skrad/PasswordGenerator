@@ -42,7 +42,8 @@ public class AuthController {
             setUsernameAndRole(response, signUpRequest.getUsername());
             return response;
         } catch (ForbiddenException e) {
-            throw new ForbiddenException("Some error occurred while auth processing: " + e.getMessage());
+            throw new ForbiddenException(
+                    "Some error occurred while auth processing: " + e.getMessage());
         }
     }
 
