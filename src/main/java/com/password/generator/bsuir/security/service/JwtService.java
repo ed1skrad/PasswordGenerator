@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class JwtService {
 
     @Value("${token.signing.key}")
-    private String jwtSigningKey;
+    String jwtSigningKey;
 
     /**
      * Extracts the username from a JWT token.
@@ -124,7 +124,7 @@ public class JwtService {
      *
      * @return the signing key.
      */
-    private Key getSigningKey() {
+    Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
