@@ -41,8 +41,8 @@ public class PasswordGenerationControllerAspect {
     @Before("passwordGenerationControllerMethods()")
     public void logMethodCall(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
-        LOGGER.info("Calling method: {} with arguments: {}",
-                methodName, Arrays.toString(joinPoint.getArgs()));
+        LOGGER.info("Calling method: {}",
+                methodName);
     }
 
     /**

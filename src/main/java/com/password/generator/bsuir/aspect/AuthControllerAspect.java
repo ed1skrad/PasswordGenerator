@@ -30,7 +30,7 @@ public class AuthControllerAspect {
     public void logMethodCall(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         Object[] args = joinPoint.getArgs();
-        LOGGER.info("Calling method: {} with arguments: {}", methodName, Arrays.toString(args));
+        LOGGER.info("Calling method: {}", methodName);
         switch (methodName) {
             case "signUp" -> {
                 SignUpRequest signUpRequest = (SignUpRequest) args[0];
@@ -44,6 +44,9 @@ public class AuthControllerAspect {
                 HttpServletRequest request = (HttpServletRequest) args[0];
                 String username = (String) request.getAttribute("username");
                 LOGGER.info("Logging out user: {}", username);
+            }
+            default -> {
+                LOGGER.info("Error!");
             }
         }
     }
