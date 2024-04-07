@@ -16,9 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -335,19 +333,28 @@ class PasswordGenerationServiceTest {
 
     @Test
     void testDeleteAllGeneratedPasswords() {
-        // given
         List<GeneratedPassword> generatedPasswords = new ArrayList<>();
         generatedPasswords.add(new GeneratedPassword());
         generatedPasswords.add(new GeneratedPassword());
         when(passwordRepository.findAll()).thenReturn(generatedPasswords);
 
-        // when
         passwordGenerationService.deleteAllGeneratedPasswords();
 
-        // then
         verify(passwordRepository, times(1)).findAll();
         verify(passwordRepository, times(1)).deleteAllByIdInBatch(anyList());
         verify(passwordCache, times(1)).clear();
     }
 
+    @Test
+    void testGenerateBulkPasswords_Difficulty() {
+        User user = new User();
+        user.setId(1L);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+        when(userService.getByUsername("testUser")).thenReturn(user);
+        BulkPasswordGenerationDto bulkPasswordGenerationDto = new BulkPasswordGenerationDto(5, Difficulty.HARD, 10);
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
+
+        assertTrue(generatedPasswords.stream().allMatch(password -> password.getDifficulty() == Difficulty.HARD));
+    }
 }
