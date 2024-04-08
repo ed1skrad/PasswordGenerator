@@ -1,6 +1,7 @@
 package com.password.generator.bsuir.dto;
 
 import com.password.generator.bsuir.model.difficultyenum.Difficulty;
+import jakarta.validation.constraints.Min;
 
 /**
  * Data transfer object for password generation.
@@ -8,6 +9,7 @@ import com.password.generator.bsuir.model.difficultyenum.Difficulty;
 public class PasswordGenerationDto {
 
     private Difficulty difficulty;
+    @Min(value = 1, message = "Password length must be at least 1")
     private int length;
 
     /**

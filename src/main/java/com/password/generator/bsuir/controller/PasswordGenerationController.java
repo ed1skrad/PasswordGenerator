@@ -6,7 +6,6 @@ import com.password.generator.bsuir.exception.PasswordGenerationException;
 import com.password.generator.bsuir.model.GeneratedPassword;
 import com.password.generator.bsuir.model.difficultyenum.Difficulty;
 import com.password.generator.bsuir.service.PasswordGenerationService;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for password generation functionality.
  */
-
 @RestController
 @RequestMapping("/api/password")
 public class PasswordGenerationController {
-
-    private static final String ERROR_MESSAGE = "Something went wrong";
 
     private final PasswordGenerationService passwordGenerationService;
 
@@ -47,46 +43,36 @@ public class PasswordGenerationController {
      *
      * @param dto the password generation parameters
      * @return the generated password
+     * @throws PasswordGenerationException if the password cannot be generated or the length is invalid
      */
     @PostMapping("/generatePassword")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> generatePassword(@RequestBody PasswordGenerationDto dto) {
-        try {
-            if (dto.getLength() > 255) {
-                throw new PasswordGenerationException("Password length should not more than 255 characters");
-            }
-            String generatedPassword = passwordGenerationService.generatePassword(dto);
-            if (generatedPassword.isEmpty()) {
-                throw new PasswordGenerationException("Failed to generate password");
-            }
-            return ResponseEntity.ok(generatedPassword);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ERROR_MESSAGE + e.getMessage());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ERROR_MESSAGE + "Access is denied.");
+        if (dto.getLength() > 255) {
+            throw new PasswordGenerationException("Password length should not more than 255 characters");
         }
+        String generatedPassword = passwordGenerationService.generatePassword(dto);
+        if (generatedPassword.isEmpty()) {
+            throw new PasswordGenerationException("Failed to generate password");
+        }
+        return ResponseEntity.ok(generatedPassword);
     }
-
 
     /**
      * Retrieves a generated password by its ID.
      *
      * @param id the ID of the generated password
      * @return the generated password
+     * @throws PasswordGenerationException if the password is not found
      */
     @GetMapping("/id/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getPasswordById(@PathVariable Long id) {
-        try {
-            Optional<GeneratedPassword>
-                    generatedPassword = passwordGenerationService.getPasswordById(id);
-            if (generatedPassword.isEmpty()) {
-                throw new PasswordGenerationException("Password not found for id: " + id);
-            }
-            return ResponseEntity.ok(generatedPassword);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ERROR_MESSAGE + e.getMessage());
+        Optional<GeneratedPassword> generatedPassword = passwordGenerationService.getPasswordById(id);
+        if (generatedPassword.isEmpty()) {
+            throw new PasswordGenerationException("Password not found for id: " + id);
         }
+        return ResponseEntity.ok(generatedPassword);
     }
 
     /**
@@ -94,41 +80,32 @@ public class PasswordGenerationController {
      *
      * @param difficulty the difficulty level of the generated passwords
      * @return the list of generated passwords
+     * @throws PasswordGenerationException if no passwords are found for the given difficulty
      */
     @GetMapping("/difficulty/{difficulty}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getPasswordsByDifficulty(@PathVariable Difficulty difficulty) {
-        try {
-            List<GeneratedPassword> generatedPasswords =
-                    passwordGenerationService.getPasswordsByDifficulty(difficulty);
-            if (generatedPasswords.isEmpty()) {
-                throw new PasswordGenerationException(
-                        "Passwords not found for difficulty: " + difficulty);
-            }
-            return ResponseEntity.ok(generatedPasswords);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ERROR_MESSAGE + e.getMessage());
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getPasswordsByDifficulty(difficulty);
+        if (generatedPasswords.isEmpty()) {
+            throw new PasswordGenerationException("Passwords not found for difficulty: " + difficulty);
         }
+        return ResponseEntity.ok(generatedPasswords);
     }
 
     /**
      * Retrieves all generated passwords.
      *
      * @return the list of generated passwords
+     * @throws PasswordGenerationException if no passwords are found
      */
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getAllGeneratedPasswords() {
-        try {
-            List<GeneratedPassword> generatedPasswords =
-                    passwordGenerationService.getAllGeneratedPasswords();
-            if (generatedPasswords.isEmpty()) {
-                throw new PasswordGenerationException("Password not found");
-            }
-            return ResponseEntity.ok(generatedPasswords);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ERROR_MESSAGE + e.getMessage());
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswords();
+        if (generatedPasswords.isEmpty()) {
+            throw new PasswordGenerationException("Password not found");
         }
+        return ResponseEntity.ok(generatedPasswords);
     }
 
     /**
@@ -136,16 +113,13 @@ public class PasswordGenerationController {
      *
      * @param passwordId the ID of the generated password
      * @return a success message
+     * @throws PasswordGenerationException if the password is not found
      */
     @DeleteMapping("/delete/{passwordId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteGeneratedPassword(@PathVariable Long passwordId) {
-        try {
-            passwordGenerationService.deleteGeneratedPasswordById(passwordId);
-            return ResponseEntity.ok("Generated password deleted successfully");
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ERROR_MESSAGE + e.getMessage());
-        }
+        passwordGenerationService.deleteGeneratedPasswordById(passwordId);
+        return ResponseEntity.ok("Generated password deleted successfully");
     }
 
     /**
@@ -153,20 +127,16 @@ public class PasswordGenerationController {
      *
      * @param username the username of the user
      * @return the list of generated passwords
+     * @throws PasswordGenerationException if no passwords are found for the given user
      */
     @GetMapping("/user/{username}/passwords")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getAllGeneratedPasswordsForUser(@PathVariable String username) {
-        try {
-            List<GeneratedPassword> generatedPasswords =
-                    passwordGenerationService.getAllGeneratedPasswordsForUser(username);
-            if (generatedPasswords.isEmpty()) {
-                throw new PasswordGenerationException("Passwords for user " + username + " not found");
-            }
-            return ResponseEntity.ok(generatedPasswords);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ERROR_MESSAGE + e.getMessage());
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.getAllGeneratedPasswordsForUser(username);
+        if (generatedPasswords.isEmpty()) {
+            throw new PasswordGenerationException("Passwords for user " + username + " not found");
         }
+        return ResponseEntity.ok(generatedPasswords);
     }
 
     /**
@@ -174,57 +144,28 @@ public class PasswordGenerationController {
      *
      * @param bulkPasswordGenerationDto the bulk password generation parameters
      * @return the list of generated passwords
+     * @throws PasswordGenerationException if no passwords are generated
      */
     @PostMapping("/generateBulkPasswords")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Object> generateBulkPasswords(
-            @RequestBody BulkPasswordGenerationDto bulkPasswordGenerationDto) {
-        try {
-            List<GeneratedPassword> generatedPasswords =
-                    passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
-            if (generatedPasswords.isEmpty()) {
-                throw new PasswordGenerationException("No passwords generated");
-            }
-            return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ERROR_MESSAGE + e.getMessage());
+    public ResponseEntity<Object> generateBulkPasswords(@RequestBody BulkPasswordGenerationDto bulkPasswordGenerationDto) {
+        List<GeneratedPassword> generatedPasswords = passwordGenerationService.generateBulkPasswords(bulkPasswordGenerationDto);
+        if (generatedPasswords.isEmpty()) {
+            throw new PasswordGenerationException("No passwords generated");
         }
+        return new ResponseEntity<>(generatedPasswords, HttpStatus.OK);
     }
 
     /**
      * Deletes all generated passwords.
      *
      * @return a success message
+     * @throws PasswordGenerationException if an error occurs during deletion
      */
     @DeleteMapping("/deleteAllBulkPasswords")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deleteBulkPasswords() {
-        try {
-            passwordGenerationService.deleteAllGeneratedPasswords();
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ERROR_MESSAGE + e.getMessage());
-        }
-    }
-
-    /**
-     * Generates multiple passwords based on the provided parameters.
-     *
-     * @param dtos the password generation parameters
-     * @param count the number of passwords to generate
-     * @return the list of generated passwords
-     */
-    @PostMapping("/generatePasswords/{count}")
-    public ResponseEntity<List<String>> generatePasswords(
-            @RequestBody List<PasswordGenerationDto> dtos, @PathVariable int count) {
-        try {
-            List<String> generatedPasswords =
-                    passwordGenerationService.generatePasswords(dtos, count);
-            return ResponseEntity.ok(generatedPasswords);
-        } catch (PasswordGenerationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonList(ERROR_MESSAGE + e.getMessage()));
-        }
+        passwordGenerationService.deleteAllGeneratedPasswords();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

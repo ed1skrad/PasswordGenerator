@@ -3,7 +3,6 @@ package com.password.generator.bsuir.aspect;
 import com.password.generator.bsuir.security.controller.AuthController;
 import com.password.generator.bsuir.security.domain.dto.SignInRequest;
 import com.password.generator.bsuir.security.domain.dto.SignUpRequest;
-import java.util.Arrays;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;

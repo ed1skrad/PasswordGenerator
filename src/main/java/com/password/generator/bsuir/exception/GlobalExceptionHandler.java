@@ -131,4 +131,21 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    /**
+     * Handles PasswordGenerationException.
+     *
+     * @param request   the HTTP servlet request
+     * @param exception the PasswordGenerationException
+     * @return a ResponseEntity with an ErrorResponse
+     * object that contains the error message and HTTP status code BAD_REQUEST
+     */
+    @ExceptionHandler(value = {PasswordGenerationException.class})
+    public ResponseEntity<ErrorResponse> handlePasswordGenerationException(
+            HttpServletRequest request, PasswordGenerationException exception) {
+        logger.error("PasswordGenerationException occurred!");
+        ErrorResponse errorResponse =
+                new ErrorResponse("Error generating password: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
