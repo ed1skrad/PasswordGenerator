@@ -44,9 +44,6 @@ public class AuthControllerAspect {
                 String username = (String) request.getAttribute("username");
                 LOGGER.info("Logging out user: {}", username);
             }
-            default -> {
-                LOGGER.info("Error!");
-            }
         }
     }
 }
