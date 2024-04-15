@@ -64,6 +64,7 @@ public class AuthenticationService {
      * @throws UsernameTakenException if the username is already taken.
      * @throws EmailInUseException if the email is already in use.
      */
+
     @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -81,13 +82,18 @@ public class AuthenticationService {
 
         Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
                 .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
+        Role adminRole = roleRepository.findByName(RoleEnum.ROLE_ADMIN)
+                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
 
         List<Role> roles = new ArrayList<>();
         roles.add(userRole);
+        roles.add(adminRole);
 
         user.setRole(roles);
         userRepository.save(user);
+
         String jwt = jwtService.generateToken(user);
+
         return new JwtAuthenticationResponse(jwt);
     }
 

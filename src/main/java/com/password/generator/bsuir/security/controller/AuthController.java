@@ -88,7 +88,7 @@ public class AuthController {
      * @param response the JWT authentication response
      * @param username the username
      */
-    private void setUsernameAndRole(JwtAuthenticationResponse response, String username) {
+    void setUsernameAndRole(JwtAuthenticationResponse response, String username) {
         response.setUsername(username);
         response.setRole(authenticationService.findUserRolesByUsername(username));
     }
