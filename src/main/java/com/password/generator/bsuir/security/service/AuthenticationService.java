@@ -81,9 +81,9 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
-                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
+                .orElseThrow(() -> new RoleNotFoundException("Error. User not found."));
         Role adminRole = roleRepository.findByName(RoleEnum.ROLE_ADMIN)
-                .orElseThrow(() -> new RoleNotFoundException("Error. Role not found."));
+                .orElseThrow(() -> new RoleNotFoundException("Error. Admin not found."));
 
         List<Role> roles = new ArrayList<>();
         roles.add(userRole);
