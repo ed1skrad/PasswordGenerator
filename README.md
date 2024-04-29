@@ -7,6 +7,7 @@
 - **Spring Data Jpa**
 - **PostgreSQL**
 - **Spring Security**
+- **AOP**
 
 ## Описание
 
@@ -24,3 +25,6 @@
 
 ## Swagger
 ![swagger](https://github.com/ed1skrad/BsuirJava/blob/main/pic/img_1.png)
+
+## Deployed 
+https://passwordgeneratorfrontend.onrender.com
